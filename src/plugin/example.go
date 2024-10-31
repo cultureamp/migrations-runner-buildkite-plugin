@@ -3,7 +3,7 @@ package plugin
 import (
 	"context"
 
-	"github.com/cultureamp/examplego/buildkite"
+	"ecs-task-runner/buildkite"
 )
 
 type ExamplePlugin struct {

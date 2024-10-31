@@ -4,7 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cultureamp/examplego/plugin"
+	"ecs-task-runner/plugin"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +19,7 @@ func TestFailOnMissingEnvironment(t *testing.T) {
 
 	err := fetcher.Fetch(&config)
 
-	assert.Error(t, err, "fetch should error")
+	require.Error(t, err, "fetch should error")
 }
 
 func TestFetchConfigFromEnvironment(t *testing.T) {

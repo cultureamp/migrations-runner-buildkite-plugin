@@ -4,7 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/cultureamp/examplego/plugin"
+	"ecs-task-runner/plugin"
+
 	"github.com/stretchr/testify/assert"
 )
 
