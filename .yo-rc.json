@@ -1,0 +1,13 @@
+{
+  "@cultureamp/generator-templates": {
+    "version": "0.123.0",
+    "namespace": "@cultureamp/templates:basic",
+    "projectSlug": "ecs-task-runner-rnd",
+    "description": "A Buildkite plugin that submits tasks for ECS clusters",
+    "team": "sre-foundations",
+    "camp": "SRE",
+    "assetCriticality": "LOW",
+    "dataClassification": "NONE",
+    "lifecycle": "experimental"
+  }
+}
