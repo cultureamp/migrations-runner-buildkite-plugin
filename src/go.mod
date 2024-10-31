@@ -1,6 +1,6 @@
-module github.com/cultureamp/examplego
+module ecs-task-runner
 
-go 1.23.1
+go 1.22.3
 
 require (
 	github.com/kelseyhightower/envconfig v1.4.0
