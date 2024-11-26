@@ -1,5 +1,4 @@
 .envrc
 # VIM swap files
 *.swp
-src/ecrscanresults
 src/*.html

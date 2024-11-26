@@ -1,8 +1,6 @@
-name: Example Go
+name: ECS Task Runner
 description: >
-  Demonstrates an on-demand Github release download
-  and run pattern for delivery Go-based Buildkite
-  plugins.
+  A Golang-based plugin to dispatch ECS tasks.
 author: https://github.com/cultureamp
 requirements: []
 configuration:

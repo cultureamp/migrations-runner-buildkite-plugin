@@ -1,5 +1,5 @@
 builds:
-  - binary: example-go-buildkite-plugin
+  - binary: ecs-task-runner
     env:
       - CGO_ENABLED=0
     goos:
