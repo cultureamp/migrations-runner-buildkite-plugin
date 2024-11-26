@@ -1,0 +1,11 @@
+name: Example Go
+description: >
+  Demonstrates an on-demand Github release download
+  and run pattern for delivery Go-based Buildkite
+  plugins.
+author: https://github.com/cultureamp
+requirements: []
+configuration:
+  properties:
+    message:
+      type: string
