@@ -1,0 +1,4 @@
+.envrc
+# VIM swap files
+*.swp
+src/*.html

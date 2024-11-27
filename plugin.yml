@@ -1,0 +1,9 @@
+name: ECS Task Runner
+description: >
+  A Golang-based plugin to dispatch ECS tasks.
+author: https://github.com/cultureamp
+requirements: []
+configuration:
+  properties:
+    message:
+      type: string
