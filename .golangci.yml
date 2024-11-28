@@ -14,7 +14,7 @@ linters:
   - tagliatelle
   - testpackage
   - paralleltest
-  - goerr113
+  - err113
   - dupl
   - forbidigo
   - funlen
