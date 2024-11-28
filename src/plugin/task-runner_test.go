@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type mockPlugin struct{}
-
 func TestDoesAnnotate(t *testing.T) {
 	agent := &AgentMock{}
 	fetcher := plugin.EnvironmentConfigFetcher{}
@@ -27,19 +25,4 @@ func TestDoesAnnotate(t *testing.T) {
 	err := examplePlugin.RunMock(ctx, fetcher, agent)
 
 	require.NoError(t, err, "should not error")
-}
-
-// TODO: Run is overloaded with more than what was in the original template. We'd have to perform more-dependency injection if we use the original implementation
-// In my head, it would make more sense to throw together a smaller mock Run function with just enough to test what we need
-func (mp mockPlugin) RunMock(ctx context.Context, fetcher plugin.ConfigFetcher, agent plugin.Agent) error {
-	var config plugin.Config
-	err := fetcher.Fetch(&config)
-	if err != nil {
-		return err
-	}
-
-	agent.Annotate(ctx, config.ParameterName, "info", "message")
-	agent.Annotate(ctx, config.Script, "info", "message")
-
-	return nil
 }
