@@ -14,7 +14,6 @@ linters:
   - tagliatelle
   - testpackage
   - paralleltest
-  - gomnd
   - goerr113
   - dupl
   - forbidigo
@@ -22,7 +21,6 @@ linters:
   - unparam
   - wsl
   - errname
-  - exhaustivestruct
   - exhaustruct
   - nilnil
   - nlreturn
@@ -37,16 +35,6 @@ linters:
   - prealloc
   - revive
   - depguard
-  # deprecated linters
-  - interfacer
-  - golint
-  - scopelint
-  - maligned
-  - deadcode
-  - ifshort
-  - structcheck
-  - nosnakecase
-  - varcheck
 
 linters-settings:
   gosec:
