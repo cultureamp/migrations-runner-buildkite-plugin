@@ -36,6 +36,7 @@ linters:
   - nestif
   - prealloc
   - revive
+  - depguard
   # deprecated linters
   - interfacer
   - golint
@@ -61,8 +62,3 @@ linters-settings:
         mode: strict
   cyclop:
     max-complexity: 20
-  depguard:
-    rules:
-      default:
-        list-mode: lax # all packages are allowed, unless explicitly denied
-        deny: []
