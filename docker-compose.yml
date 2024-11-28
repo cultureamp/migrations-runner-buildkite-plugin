@@ -9,3 +9,11 @@ services:
     image: buildkite/plugin-tester:v4.0.0
     volumes:
       - ".:/plugin"
+  build:
+    build:
+      context: src
+      dockerfile: Dockerfile
+      args:
+        - GONOPROXY
+        - GOPRIVATE
+        - GOPROXY
