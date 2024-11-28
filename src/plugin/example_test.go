@@ -20,5 +20,5 @@ func TestDoesAnnotate(t *testing.T) {
 
 	err := examplePlugin.Run(ctx, fetcher, agent)
 
-	assert.Nil(t, err, "should not error")
+	assert.NoError(t, err, "should not error")
 }
