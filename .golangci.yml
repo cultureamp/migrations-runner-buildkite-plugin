@@ -35,6 +35,7 @@ linters:
   - prealloc
   - revive
   - depguard
+  - exportloopref
 
 linters-settings:
   gosec:
