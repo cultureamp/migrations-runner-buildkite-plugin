@@ -63,16 +63,6 @@ linters-settings:
     max-complexity: 20
   depguard:
     rules:
-      main:
+      default:
         list-mode: lax # all packages are allowed, unless explicitly denied
-        files: # all Go files, except test files
-          - $all
-          - "!$test"
-        allow:
-          - $gostd # packages from Go standard library
-      test:
-        list-mode: lax
-        files: # test files only
-          - $test
-        allow:
-          - $gostd
+        deny: []
