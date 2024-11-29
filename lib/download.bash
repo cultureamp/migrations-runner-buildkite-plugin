@@ -72,7 +72,7 @@ get_version() {
 download_binary_and_run() {
   get_architecture || return 1
   local _arch="$RETVAL"
-  local _executable="ecs-task-runner"
+  local _executable="ecs-task-runner-buildkite-plugin"
   local _repo="https://github.com/cultureamp/ecs-task-runner-buildkite-plugin"
 
   get_version || return 1
