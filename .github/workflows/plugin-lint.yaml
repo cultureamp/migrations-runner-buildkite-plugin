@@ -1,0 +1,21 @@
+name: Plugin Lint
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Lint
+        run: docker compose run --rm lint
+# TODO: Setup testing once we begin the flesh out the plugin
+# - name: Test
+#   run: docker compose run --rm tests
