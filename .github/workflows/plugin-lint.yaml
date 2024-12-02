@@ -1,4 +1,4 @@
-name: Plugin Lint
+name: Plugin Linting & Testing
 
 on:
   pull_request:
@@ -16,6 +16,6 @@ jobs:
 
       - name: Lint
         run: docker compose run --rm lint
-# TODO: Setup testing once we begin the flesh out the plugin
-# - name: Test
-#   run: docker compose run --rm tests
+
+      - name: Test
+        run: docker compose run --rm tests
