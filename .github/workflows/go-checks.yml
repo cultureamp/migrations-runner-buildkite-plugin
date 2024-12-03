@@ -13,11 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure Go environment with access to private modules
-        uses: cultureamp/go-private-modules@v1
-        with:
-          github-token: "${{ secrets.GO_PRIVATE_MODULES_TOKEN }}"
-
       - uses: actions/setup-go@v5
         with:
           go-version-file: src/go.mod
@@ -31,11 +26,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Configure Go environment with access to private modules
-        uses: cultureamp/go-private-modules@v1
-        with:
-          github-token: "${{ secrets.GO_PRIVATE_MODULES_TOKEN }}"
 
       - uses: actions/setup-go@v5
         with:
@@ -54,11 +44,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Configure Go environment with access to private modules
-        uses: cultureamp/go-private-modules@v1
-        with:
-          github-token: "${{ secrets.GO_PRIVATE_MODULES_TOKEN }}"
 
       - uses: actions/setup-go@v5
         with:

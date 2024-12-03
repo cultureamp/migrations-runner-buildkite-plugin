@@ -25,10 +25,6 @@ RUN go mod verify
 
 COPY . ./
 
-ARG GONOPROXY
-ARG GOPRIVATE
-ARG GOPROXY
-
 # build as a static binary without debug symbols
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
       -ldflags='-w -s -extldflags "-static"' -a \
