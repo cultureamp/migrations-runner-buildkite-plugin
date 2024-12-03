@@ -15,7 +15,7 @@ func TestDoesAnnotate(t *testing.T) {
 	ctx := context.Background()
 	annotation := "test-message"
 
-	t.Setenv("BUILDKITE_PLUGIN_EXAMPLE_GO_MESSAGE", annotation)
+	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_MESSAGE", annotation)
 	agent.Mock.On("Annotate", ctx, annotation, "info", "message").Return(nil)
 
 	err := examplePlugin.Run(ctx, fetcher, agent)

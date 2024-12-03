@@ -25,7 +25,7 @@ func TestFetchConfigFromEnvironment(t *testing.T) {
 	var config plugin.Config
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
-	t.Setenv("BUILDKITE_PLUGIN_EXAMPLE_GO_MESSAGE", "test-message")
+	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_MESSAGE", "test-message")
 
 	err := fetcher.Fetch(&config)
 
