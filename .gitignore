@@ -2,3 +2,6 @@
 # VIM swap files
 *.swp
 src/*.html
+
+# Go Release artifacts
+src/dist
