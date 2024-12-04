@@ -10,16 +10,57 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFailOnMissingEnvironment(t *testing.T) {
+func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 	var config plugin.Config
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
-	t.Setenv("BUILDKITE_PLUGIN_EXAMPLE_GO_MESSAGE", "")
-	os.Unsetenv("BUILDKITE_PLUGIN_EXAMPLE_GO_MESSAGE")
+	tests := []struct {
+		name            string
+		enabledEnvVars  map[string]string
+		disabledEnvVars []string
+		expectedErr     string
+	}{
+		{
+			name:            "all required parameters are unset",
+			enabledEnvVars:  map[string]string{},
+			disabledEnvVars: []string{"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME", "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT"},
+			expectedErr:     "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME missing value",
+		},
+		{
+			name: "variable PARAMETER_NAME set",
+			enabledEnvVars: map[string]string{
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME": "test-parameter",
+			},
+			disabledEnvVars: []string{"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT"},
+			expectedErr:     "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT missing value",
+		},
+		{
+			name: "variable SCRIPT set",
+			enabledEnvVars: map[string]string{
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT": "bin/script",
+			},
+			disabledEnvVars: []string{"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME"},
+			expectedErr:     "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME missing value",
+		},
+	}
 
-	err := fetcher.Fetch(&config)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// set the environment variables
+			for key, value := range tc.enabledEnvVars {
+				t.Setenv(key, value)
+			}
 
-	require.Error(t, err, "fetch should error")
+			// unset the environment variables
+			for _, key := range tc.disabledEnvVars {
+				os.Unsetenv(key)
+			}
+
+			// verify the fetcher throws the error specific to missing environment variable
+			err := fetcher.Fetch(&config)
+			assert.EqualError(t, err, tc.expectedErr, "fetch should error on missing environment variable")
+		})
+	}
 }
 
 func TestFetchConfigFromEnvironment(t *testing.T) {
