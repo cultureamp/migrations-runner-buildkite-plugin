@@ -44,7 +44,8 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 		log.Fatalf("Failed to retrieve configuration: %v", err)
 	}
 
-	// append Script to configuration.Command slice
+	// append Script to configuration.Command. The Script value specifies what script needs to be
+	// executed by the task.
 	configuration.Command = append(configuration.Command, config.Script)
 
 	ecsClient := ecs.NewFromConfig(cfg)
