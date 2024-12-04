@@ -22,11 +22,7 @@ type ConfigFetcher interface {
 	Fetch(config *Config) error
 }
 
-type Agent interface {
-	Annotate(ctx context.Context, message string, style string, annotationContext string) error
-}
-
-func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, agent Agent) error {
+func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) error {
 	var config Config
 	err := fetcher.Fetch(&config)
 	if err != nil {
@@ -35,19 +31,6 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, agen
 	}
 
 	buildkite.Log("Executing task-runner plugin\n")
-
-	annotation := config.ParameterName
-	err = agent.Annotate(ctx, annotation, "info", "message")
-	if err != nil {
-		buildkite.LogFailuref("buildkite annotation error: %s\n", err.Error())
-		return err
-	}
-	annotation = config.Script
-	err = agent.Annotate(ctx, annotation, "info", "message")
-	if err != nil {
-		buildkite.LogFailuref("buildkite annotation error: %s\n", err.Error())
-		return err
-	}
 
 	cfg, err := awsconfig.LoadDefaultConfig(ctx)
 	if err != nil {

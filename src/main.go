@@ -10,11 +10,10 @@ import (
 
 func main() {
 	ctx := context.Background()
-	agent := &buildkite.Agent{}
 	fetcher := plugin.EnvironmentConfigFetcher{}
 	taskRunnerPlugin := plugin.TaskRunnerPlugin{}
 
-	err := taskRunnerPlugin.Run(ctx, fetcher, agent)
+	err := taskRunnerPlugin.Run(ctx, fetcher)
 
 	if err != nil {
 		buildkite.LogFailuref("plugin execution failed: %s\n", err.Error())
