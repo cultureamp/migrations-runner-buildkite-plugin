@@ -109,7 +109,7 @@ func FindLogStreamFromTask(ctx context.Context, ecsClientAPI EcsClientAPI, task 
 
 	// We need the logGroupName, streamPrefix, and a container name to be able to produce a FindLogStreamOutput in full
 	if logGroupName == "" || streamPrefix == "" {
-		return LogDetails{}, fmt.Errorf("ecs:DescribeTaskDefinition response does not contain required logging configuration: %v", response)
+		return LogDetails{}, fmt.Errorf("cannot trace migration output: container logging is not configured on task definition: %v", response.TaskDefinition.TaskDefinitionArn)
 	}
 
 	return LogDetails{
