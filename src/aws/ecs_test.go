@@ -173,7 +173,7 @@ func TestTaskIdFromArn(t *testing.T) {
 	}
 }
 
-func TestFindLogStreamFromTask(t *testing.T) {
+func TestFindLogStreamFromTaskPositive(t *testing.T) {
 	task := types.Task{
 		TaskArn:           aws.String("arn:aws:ecs:us-west-2:123456789012:task/test-cluster/07cc583696bd44e0be450bff7314ddaf"),
 		TaskDefinitionArn: aws.String("arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-1"),
@@ -225,6 +225,13 @@ func TestFindLogStreamFromTask(t *testing.T) {
 			require.NoError(t, err)
 			assert.Equal(t, tc.expected, result)
 		})
+	}
+}
+
+func TestFindLogStreamFromTaskNegative(t *testing.T) {
+	task := types.Task{
+		TaskArn:           aws.String("arn:aws:ecs:us-west-2:123456789012:task/test-cluster/07cc583696bd44e0be450bff7314ddaf"),
+		TaskDefinitionArn: aws.String("arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-1"),
 	}
 
 	negativeTests := []struct {
