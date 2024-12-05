@@ -2,7 +2,6 @@ package plugin
 
 import (
 	"context"
-	"log"
 	"time"
 
 	awsinternal "ecs-task-runner/aws"
@@ -34,14 +33,16 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 
 	cfg, err := awsconfig.LoadDefaultConfig(ctx)
 	if err != nil {
-		log.Fatalf("config load failed: %v", err)
+		buildkite.LogFailuref("config load failed: %s\n", err.Error())
+		return err
 	}
 
 	ssmClient := ssm.NewFromConfig(cfg)
-	log.Printf("Retrieving task configuration from: %s", config.ParameterName)
+	buildkite.Logf("Retrieving task configuration from: %s", config.ParameterName)
 	configuration, err := awsinternal.RetrieveConfiguration(ctx, ssmClient, config.ParameterName)
 	if err != nil {
-		log.Fatalf("Failed to retrieve configuration: %v", err)
+		buildkite.LogFailuref("Failed to retrieve configuration: %s\n", err.Error())
+		return err
 	}
 
 	// append Script to configuration.Command. The Script value specifies what script needs to be
@@ -51,7 +52,8 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	ecsClient := ecs.NewFromConfig(cfg)
 	taskArn, err := awsinternal.SubmitTask(ctx, ecsClient, configuration)
 	if err != nil {
-		log.Fatalf("Failed to submit task: %v", err)
+		buildkite.LogFailuref("Failed to submit task: %s\n", err.Error())
+		return err
 	}
 
 	waiterClient := ecs.NewTasksStoppedWaiter(ecsClient, func(o *ecs.TasksStoppedWaiterOptions) {
@@ -61,16 +63,16 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	})
 	result, err := awsinternal.WaitForCompletion(ctx, waiterClient, taskArn)
 	if err != nil {
-		// TODO: Do we wanna go from fatal, to print, and provide an opportunity to share logs from the task if there any?
-		// That, or we include the log sharing logic within this condition
-		log.Printf("error waiting for task completion: %v", err)
-		log.Fatalf("failure information: %v", result.Failures[0])
+		buildkite.LogFailuref("Failed to wait for task completion: %s\n", err.Error())
+		buildkite.LogFailuref("Failure information: %v\n", result.Failures[0])
+		return err
 	}
 	// In a successful scenario for task completion, we would have a `tasks` slice with a single element
 	task := result.Tasks[0]
 	taskLogDetails, err := awsinternal.FindLogStreamFromTask(ctx, ecsClient, task)
 	if err != nil {
-		log.Fatalf("Failed to acquire log stream information for task: %v", err)
+		buildkite.LogFailuref("Failed to acquire log stream information for task: %s\n", err.Error())
+		return err
 	}
 
 	cloudwatchClient := cloudwatchlogs.NewFromConfig(cfg)
@@ -79,26 +81,26 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	// This can come from logs not being available yet, or the service lacking permissions to publish logs at the time
 	// TODO: In the original implementation this is how it worked. Is there a possible way to "Wait" for logs?
 	if err != nil {
-		log.Printf("Failed to retrieve CloudWatch Logs for job, continuing... %v", err)
+		buildkite.LogFailuref("Failed to retrieve CloudWatch Logs for job, continuing... %v", err)
 	}
 
 	if len(logs) > 0 {
-		log.Printf("CloudWatch Logs for job:")
+		buildkite.Logf("CloudWatch Logs for job:")
 		for _, l := range logs {
 			if l.Timestamp != nil {
 				// Applying ISO 8601 format, l.Timestamp is in milliseconds, not very useful in logging
 				placeholder := time.UnixMilli(*l.Timestamp).Format(time.RFC3339)
-				log.Printf("-> %s %s", placeholder, *l.Message)
+				buildkite.Logf("-> %s %s\n", placeholder, *l.Message)
 			}
 		}
 	}
 
 	// TODO: Assuming the task only has 1 container. What if there others? Like Datadog sideca
 	if task.Containers[0].ExitCode != aws.Int32(0) {
-		log.Fatalf("Task stopped with a non-zero exit code:: %d", task.Containers[0].ExitCode)
+		buildkite.LogFailuref("Task stopped with a non-zero exit code:: %d", task.Containers[0].ExitCode)
 		// TODO: At about here, a structured return type of "success: true/false" and "error" is returned
 	} else {
-		log.Printf("Task completed successfully :)")
+		buildkite.Log("Task completed successfully :)")
 		// TODO: At about here, a structured return type of "success: true/false" and "error" is returned
 	}
 
