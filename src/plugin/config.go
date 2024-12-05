@@ -5,7 +5,8 @@ import (
 )
 
 type Config struct {
-	Message string `envconfig:"MESSAGE" required:"true"`
+	ParameterName string `required:"true" split_words:"true"`
+	Script        string `required:"true" split_words:"true"`
 }
 
 type EnvironmentConfigFetcher struct {

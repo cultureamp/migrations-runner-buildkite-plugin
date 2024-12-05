@@ -4,31 +4,81 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cultureamp/examplego/plugin"
+	"ecs-task-runner/plugin"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestFailOnMissingEnvironment(t *testing.T) {
+func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 	var config plugin.Config
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
-	t.Setenv("BUILDKITE_PLUGIN_EXAMPLE_GO_MESSAGE", "")
-	os.Unsetenv("BUILDKITE_PLUGIN_EXAMPLE_GO_MESSAGE")
+	tests := []struct {
+		name           string
+		enabledEnvVars map[string]string
+		expectedErr    string
+	}{
+		{
+			name:           "all required parameters are unset",
+			enabledEnvVars: map[string]string{},
+			expectedErr:    "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME missing value",
+		},
+		{
+			name: "variable PARAMETER_NAME set",
+			enabledEnvVars: map[string]string{
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME": "test-parameter",
+			},
+			expectedErr: "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT missing value",
+		},
+		{
+			name: "variable SCRIPT set",
+			enabledEnvVars: map[string]string{
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT": "bin/script",
+			},
+			expectedErr: "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME missing value",
+		},
+	}
 
-	err := fetcher.Fetch(&config)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// clear the environment variables *before* each test case is run
+			unsetEnvironmentVariables()
+			// clear the environment variables *after* each test case is run
+			defer unsetEnvironmentVariables()
 
-	assert.Error(t, err, "fetch should error")
+			// set the environment variables
+			for key, value := range tc.enabledEnvVars {
+				t.Setenv(key, value)
+			}
+
+			// verify the fetcher throws the error specific to missing environment variable
+			err := fetcher.Fetch(&config)
+			assert.EqualError(t, err, tc.expectedErr, "fetch should error on missing environment variable")
+		})
+	}
 }
 
 func TestFetchConfigFromEnvironment(t *testing.T) {
+	unsetEnvironmentVariables()
+	defer unsetEnvironmentVariables()
+
 	var config plugin.Config
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
-	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_MESSAGE", "test-message")
+	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME", "test-parameter")
+	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT", "hello-world")
 
 	err := fetcher.Fetch(&config)
 
 	require.NoError(t, err, "fetch should not error")
-	assert.Equal(t, "test-message", config.Message, "fetched message should match environment")
+	assert.Equal(t, "test-parameter", config.ParameterName, "fetched message should match environment")
+	assert.Equal(t, "hello-world", config.Script, "fetched message should match environment")
+}
+
+// Unsets environment variables through an all-in-one function. Extend this with additional environment variables as
+// needed.
+func unsetEnvironmentVariables() {
+	os.Unsetenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME")
+	os.Unsetenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT")
 }

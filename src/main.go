@@ -4,17 +4,16 @@ import (
 	"context"
 	"os"
 
-	"github.com/cultureamp/examplego/buildkite"
-	"github.com/cultureamp/examplego/plugin"
+	"ecs-task-runner/buildkite"
+	"ecs-task-runner/plugin"
 )
 
 func main() {
 	ctx := context.Background()
-	agent := &buildkite.Agent{}
 	fetcher := plugin.EnvironmentConfigFetcher{}
-	examplePlugin := plugin.ExamplePlugin{}
+	taskRunnerPlugin := plugin.TaskRunnerPlugin{}
 
-	err := examplePlugin.Run(ctx, fetcher, agent)
+	err := taskRunnerPlugin.Run(ctx, fetcher)
 
 	if err != nil {
 		buildkite.LogFailuref("plugin execution failed: %s\n", err.Error())
