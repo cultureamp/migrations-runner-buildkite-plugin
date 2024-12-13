@@ -15,17 +15,25 @@ func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
 	tests := []struct {
-		name           string
-		enabledEnvVars map[string]string
-		expectedErr    string
+		name            string
+		disabledEnvVars []string
+		enabledEnvVars  map[string]string
+		expectedErr     string
 	}{
 		{
-			name:           "all required parameters are unset",
+			name: "all required parameters are unset",
+			disabledEnvVars: []string{
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME",
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT",
+			},
 			enabledEnvVars: map[string]string{},
 			expectedErr:    "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME missing value",
 		},
 		{
 			name: "variable PARAMETER_NAME set",
+			disabledEnvVars: []string{
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT",
+			},
 			enabledEnvVars: map[string]string{
 				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME": "test-parameter",
 			},
@@ -33,6 +41,9 @@ func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 		},
 		{
 			name: "variable SCRIPT set",
+			disabledEnvVars: []string{
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME",
+			},
 			enabledEnvVars: map[string]string{
 				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT": "bin/script",
 			},
@@ -42,10 +53,9 @@ func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			// clear the environment variables *before* each test case is run
-			unsetEnvironmentVariables()
-			// clear the environment variables *after* each test case is run
-			defer unsetEnvironmentVariables()
+			for _, key := range tc.disabledEnvVars {
+				unsetEnv(t, key)
+			}
 
 			// set the environment variables
 			for key, value := range tc.enabledEnvVars {
@@ -60,8 +70,8 @@ func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 }
 
 func TestFetchConfigFromEnvironment(t *testing.T) {
-	unsetEnvironmentVariables()
-	defer unsetEnvironmentVariables()
+	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME")
+	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT")
 
 	var config plugin.Config
 	fetcher := plugin.EnvironmentConfigFetcher{}
@@ -76,9 +86,19 @@ func TestFetchConfigFromEnvironment(t *testing.T) {
 	assert.Equal(t, "hello-world", config.Script, "fetched message should match environment")
 }
 
-// Unsets environment variables through an all-in-one function. Extend this with additional environment variables as
-// needed.
-func unsetEnvironmentVariables() {
-	os.Unsetenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME")
-	os.Unsetenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT")
+func unsetEnv(t *testing.T, key string) {
+	t.Helper()
+
+	// ensure state is restored correctly
+	currValue, exists := os.LookupEnv(key)
+	t.Cleanup(func() {
+		if exists {
+			os.Setenv(key, currValue)
+		} else {
+			os.Unsetenv(key)
+		}
+	})
+
+	// clear the value
+	os.Unsetenv(key)
 }
