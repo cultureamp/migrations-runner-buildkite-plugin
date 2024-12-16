@@ -37,7 +37,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	}
 
 	ssmClient := ssm.NewFromConfig(cfg)
-	buildkite.Logf("Retrieving task configuration from: %s", config.ParameterName)
+	buildkite.Logf("Retrieving task configuration from: %s \n", config.ParameterName)
 	configuration, err := awsinternal.RetrieveConfiguration(ctx, ssmClient, config.ParameterName)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve configuration: %w", err)
