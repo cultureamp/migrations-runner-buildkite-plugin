@@ -4,8 +4,8 @@ import (
 	"context"
 	"os"
 
-	"ecs-task-runner/buildkite"
-	"ecs-task-runner/plugin"
+	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/buildkite"
+	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/plugin"
 )
 
 func main() {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	awsinternal "ecs-task-runner/aws"
-	"ecs-task-runner/buildkite"
+	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
+	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/buildkite"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
