@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	awsinternal "ecs-task-runner/aws"
@@ -25,24 +26,21 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	var config Config
 	err := fetcher.Fetch(&config)
 	if err != nil {
-		buildkite.LogFailuref("plugin configuration error: %s\n", err.Error())
-		return err
+		return fmt.Errorf("plugin configuration error: %w", err)
 	}
 
 	buildkite.Log("Executing task-runner plugin\n")
 
 	cfg, err := awsconfig.LoadDefaultConfig(ctx)
 	if err != nil {
-		buildkite.LogFailuref("config load failed: %s\n", err.Error())
-		return err
+		return fmt.Errorf("config load failed: %w", err)
 	}
 
 	ssmClient := ssm.NewFromConfig(cfg)
 	buildkite.Logf("Retrieving task configuration from: %s", config.ParameterName)
 	configuration, err := awsinternal.RetrieveConfiguration(ctx, ssmClient, config.ParameterName)
 	if err != nil {
-		buildkite.LogFailuref("Failed to retrieve configuration: %s\n", err.Error())
-		return err
+		return fmt.Errorf("Failed to retrieve configuration: %w", err)
 	}
 
 	// append Script to configuration.Command. The Script value specifies what script needs to be
@@ -52,8 +50,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	ecsClient := ecs.NewFromConfig(cfg)
 	taskArn, err := awsinternal.SubmitTask(ctx, ecsClient, configuration)
 	if err != nil {
-		buildkite.LogFailuref("Failed to submit task: %s\n", err.Error())
-		return err
+		return fmt.Errorf("Failed to submit task: %w", err)
 	}
 
 	waiterClient := ecs.NewTasksStoppedWaiter(ecsClient, func(o *ecs.TasksStoppedWaiterOptions) {
@@ -63,16 +60,13 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	})
 	result, err := awsinternal.WaitForCompletion(ctx, waiterClient, taskArn)
 	if err != nil {
-		buildkite.LogFailuref("Failed to wait for task completion: %s\n", err.Error())
-		buildkite.LogFailuref("Failure information: %v\n", result.Failures[0])
-		return err
+		return fmt.Errorf("Failed to wait for task completion: %w\nFailure information: %v\n", err, result.Failures[0])
 	}
 	// In a successful scenario for task completion, we would have a `tasks` slice with a single element
 	task := result.Tasks[0]
 	taskLogDetails, err := awsinternal.FindLogStreamFromTask(ctx, ecsClient, task)
 	if err != nil {
-		buildkite.LogFailuref("Failed to acquire log stream information for task: %s\n", err.Error())
-		return err
+		return fmt.Errorf("Failed to acquire log stream information for task: %w", err)
 	}
 
 	cloudwatchClient := cloudwatchlogs.NewFromConfig(cfg)
