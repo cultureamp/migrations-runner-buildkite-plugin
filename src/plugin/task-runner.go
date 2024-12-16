@@ -40,7 +40,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	buildkite.Logf("Retrieving task configuration from: %s", config.ParameterName)
 	configuration, err := awsinternal.RetrieveConfiguration(ctx, ssmClient, config.ParameterName)
 	if err != nil {
-		return fmt.Errorf("Failed to retrieve configuration: %w", err)
+		return fmt.Errorf("failed to retrieve configuration: %w", err)
 	}
 
 	// append Script to configuration.Command. The Script value specifies what script needs to be
@@ -50,7 +50,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	ecsClient := ecs.NewFromConfig(cfg)
 	taskArn, err := awsinternal.SubmitTask(ctx, ecsClient, configuration)
 	if err != nil {
-		return fmt.Errorf("Failed to submit task: %w", err)
+		return fmt.Errorf("failed to submit task: %w", err)
 	}
 
 	waiterClient := ecs.NewTasksStoppedWaiter(ecsClient, func(o *ecs.TasksStoppedWaiterOptions) {
@@ -60,13 +60,13 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	})
 	result, err := awsinternal.WaitForCompletion(ctx, waiterClient, taskArn)
 	if err != nil {
-		return fmt.Errorf("Failed to wait for task completion: %w\nFailure information: %v\n", err, result.Failures[0])
+		return fmt.Errorf("failed to wait for task completion: %w\nFailure information: %v", err, result.Failures[0])
 	}
 	// In a successful scenario for task completion, we would have a `tasks` slice with a single element
 	task := result.Tasks[0]
 	taskLogDetails, err := awsinternal.FindLogStreamFromTask(ctx, ecsClient, task)
 	if err != nil {
-		return fmt.Errorf("Failed to acquire log stream information for task: %w", err)
+		return fmt.Errorf("failed to acquire log stream information for task: %w", err)
 	}
 
 	cloudwatchClient := cloudwatchlogs.NewFromConfig(cfg)
@@ -75,7 +75,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	// This can come from logs not being available yet, or the service lacking permissions to publish logs at the time
 	// TODO: In the original implementation this is how it worked. Is there a possible way to "Wait" for logs?
 	if err != nil {
-		buildkite.LogFailuref("Failed to retrieve CloudWatch Logs for job, continuing... %v", err)
+		buildkite.LogFailuref("failed to retrieve CloudWatch Logs for job, continuing... %v", err)
 	}
 
 	if len(logs) > 0 {
