@@ -78,7 +78,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	}
 
 	if len(logs) > 0 {
-		buildkite.Logf("CloudWatch Logs for job:")
+		buildkite.Logf("CloudWatch Logs for job: \n")
 		for _, l := range logs {
 			if l.Timestamp != nil {
 				// Applying ISO 8601 format, l.Timestamp is in milliseconds, not very useful in logging
@@ -97,6 +97,6 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 		// TODO: At about here, a structured return type of "success: true/false" and "error" is returned
 	}
 
-	buildkite.Log("done.")
+	buildkite.Log("done. \n")
 	return nil
 }
