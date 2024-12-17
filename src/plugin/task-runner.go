@@ -8,7 +8,6 @@ import (
 	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
 	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/buildkite"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
@@ -89,12 +88,12 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 		}
 	}
 
-	// TODO: Assuming the task only has 1 container. What if there others? Like Datadog sideca
-	if task.Containers[0].ExitCode != aws.Int32(0) {
-		buildkite.LogFailuref("Task stopped with a non-zero exit code:: %d", task.Containers[0].ExitCode)
+	// TODO: Assuming the task only has 1 container. What if there others? Like Datadog sidecar
+	if *task.Containers[0].ExitCode != 0 {
+		buildkite.LogFailuref("Task stopped with a non-zero exit code:: %d\n", *task.Containers[0].ExitCode)
 		// TODO: At about here, a structured return type of "success: true/false" and "error" is returned
 	} else {
-		buildkite.Log("Task completed successfully :)")
+		buildkite.Log("Task completed successfully :) \n")
 		// TODO: At about here, a structured return type of "success: true/false" and "error" is returned
 	}
 
