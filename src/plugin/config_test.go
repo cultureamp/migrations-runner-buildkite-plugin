@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"ecs-task-runner/plugin"
+	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/plugin"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
