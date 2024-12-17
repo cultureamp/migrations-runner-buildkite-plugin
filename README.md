@@ -17,6 +17,11 @@ steps:
 
 The message to annotate onto the build.
 
+## Usage
+This plugin is based on an existing pattern in `murmur` where database migrations are run as a task on ECS. To provide additional context for how this plugin is expected to be used, this is the expected pattern:
+
+- A CI image is built and pushed to ECR
+- The entrypoint of the image is overridden in the task definition to run the specific migration task
 
 # Requisite Infrastructure
 
