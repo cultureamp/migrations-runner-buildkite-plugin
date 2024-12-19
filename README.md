@@ -32,7 +32,7 @@ This plugin comes with some assumed infrastructure that needs to be deployed bef
 - An ECR image
 - An IAM role for the ECS task
 - An IAM role for the BK agent to start the task
-- A Parameter Store parameter defining the task configuration (including security groups, etc)
+- A Parameter Store parameter extending the task definition by providing entrypoint overrides and networking configuration
 - A log group for the task
 - A security group for your service (this can be the [base-infrastructure-for-services](https://github.com/cultureamp/base-infrastructure-for-services) source security group
 
