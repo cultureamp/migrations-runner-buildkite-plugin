@@ -37,4 +37,4 @@ This plugin comes with some assumed infrastructure that needs to be deployed bef
 - A security group for your service (this can be the [base-infrastructure-for-services](https://github.com/cultureamp/base-infrastructure-for-services) source security group
 
 This can be visualised below:
-![The overall flow of this plugin and AWS resources](docs/images/diagram.png)
+![The overall flow of this plugin and AWS resources](docs/images/diagram.svg)
