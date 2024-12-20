@@ -1,4 +1,4 @@
-module ecs-task-runner
+module github.com/cultureamp/ecs-task-runner-buildkite-plugin
 
 go 1.23.2
 
