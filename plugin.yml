@@ -5,7 +5,7 @@ author: https://github.com/cultureamp
 requirements: []
 configuration:
   properties:
-    parameterName:
+    parameter-name:
       type: string
     script:
       type: string

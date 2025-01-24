@@ -8,7 +8,6 @@ import (
 	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
 	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/buildkite"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
@@ -37,7 +36,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	}
 
 	ssmClient := ssm.NewFromConfig(cfg)
-	buildkite.Logf("Retrieving task configuration from: %s", config.ParameterName)
+	buildkite.Logf("Retrieving task configuration from: %s \n", config.ParameterName)
 	configuration, err := awsinternal.RetrieveConfiguration(ctx, ssmClient, config.ParameterName)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve configuration: %w", err)
@@ -79,7 +78,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	}
 
 	if len(logs) > 0 {
-		buildkite.Logf("CloudWatch Logs for job:")
+		buildkite.Logf("CloudWatch Logs for job: \n")
 		for _, l := range logs {
 			if l.Timestamp != nil {
 				// Applying ISO 8601 format, l.Timestamp is in milliseconds, not very useful in logging
@@ -89,15 +88,15 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 		}
 	}
 
-	// TODO: Assuming the task only has 1 container. What if there others? Like Datadog sideca
-	if task.Containers[0].ExitCode != aws.Int32(0) {
-		buildkite.LogFailuref("Task stopped with a non-zero exit code:: %d", task.Containers[0].ExitCode)
+	// TODO: Assuming the task only has 1 container. What if there others? Like Datadog sidecar
+	if *task.Containers[0].ExitCode != 0 {
+		buildkite.LogFailuref("Task stopped with a non-zero exit code:: %d\n", *task.Containers[0].ExitCode)
 		// TODO: At about here, a structured return type of "success: true/false" and "error" is returned
 	} else {
-		buildkite.Log("Task completed successfully :)")
+		buildkite.Log("Task completed successfully :) \n")
 		// TODO: At about here, a structured return type of "success: true/false" and "error" is returned
 	}
 
-	buildkite.Log("done.")
+	buildkite.Log("done. \n")
 	return nil
 }

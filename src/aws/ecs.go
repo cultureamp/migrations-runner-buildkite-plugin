@@ -30,7 +30,7 @@ func SubmitTask(ctx context.Context, ecsAPI EcsClientAPI, input *TaskRunnerConfi
 		Overrides: &types.TaskOverride{
 			ContainerOverrides: []types.ContainerOverride{
 				{
-					Name:    aws.String("migrations-runner"),
+					Name:    aws.String("task-runner"),
 					Command: input.Command,
 				},
 			},
@@ -109,7 +109,7 @@ func FindLogStreamFromTask(ctx context.Context, ecsClientAPI EcsClientAPI, task 
 
 	// We need the logGroupName, streamPrefix, and a container name to be able to produce a FindLogStreamOutput in full
 	if logGroupName == "" || streamPrefix == "" {
-		return LogDetails{}, fmt.Errorf("cannot trace migration output: container logging is not configured on task definition: %v", response.TaskDefinition.TaskDefinitionArn)
+		return LogDetails{}, fmt.Errorf("cannot trace task output: container logging is not configured on task definition: %v", response.TaskDefinition.TaskDefinitionArn)
 	}
 
 	return LogDetails{
