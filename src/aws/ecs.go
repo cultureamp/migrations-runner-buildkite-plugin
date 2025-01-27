@@ -30,7 +30,7 @@ func SubmitTask(ctx context.Context, ecsAPI EcsClientAPI, input *TaskRunnerConfi
 		Overrides: &types.TaskOverride{
 			ContainerOverrides: []types.ContainerOverride{
 				{
-					Name:    aws.String("task-runner"),
+					Name:    aws.String("migrations-runner"),
 					Command: input.Command,
 				},
 			},
