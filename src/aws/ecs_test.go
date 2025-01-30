@@ -365,7 +365,7 @@ func TestWaitForCompletion(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := WaitForCompletion(context.TODO(), tc.waiter, tc.input)
+			result, err := WaitForCompletion(context.TODO(), tc.waiter, tc.input, 15)
 			t.Logf("result: '%v'", err)
 			t.Logf("expected: detail: %v, reason: %v", *tc.expected.Failures[0].Detail, *tc.expected.Failures[0].Reason)
 

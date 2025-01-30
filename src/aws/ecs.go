@@ -59,11 +59,10 @@ func SubmitTask(ctx context.Context, ecsAPI EcsClientAPI, input *TaskRunnerConfi
 	return *response.Tasks[0].TaskArn, nil
 }
 
-func WaitForCompletion(ctx context.Context, waiter ecsWaiterAPI, taskArn string) (*ecs.DescribeTasksOutput, error) {
+func WaitForCompletion(ctx context.Context, waiter ecsWaiterAPI, taskArn string, timeOut int) (*ecs.DescribeTasksOutput, error) {
 	cluster := ClusterFromTaskArn(taskArn)
 
-	// TODO: This magic number will be resolved in a future piece of work, not going to refactor this right now
-	maxWaitDuration := 15 * time.Minute //nolint:mnd
+	maxWaitDuration := time.Duration(timeOut) * time.Second
 	result, err := waiter.WaitForOutput(ctx, &ecs.DescribeTasksInput{
 		Cluster: aws.String(cluster),
 		Tasks:   []string{taskArn},

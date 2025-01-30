@@ -57,7 +57,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 		// TODO: This is currently a magic number. If we want this to be configurable, remove the nolint directive and fix it up
 		o.MaxDelay = 10 * time.Second //nolint:mnd
 	})
-	result, err := awsinternal.WaitForCompletion(ctx, waiterClient, taskArn)
+	result, err := awsinternal.WaitForCompletion(ctx, waiterClient, taskArn, config.TimeOut)
 	if err != nil {
 		return fmt.Errorf("failed to wait for task completion: %w\nFailure information: %v", err, result.Failures[0])
 	}
