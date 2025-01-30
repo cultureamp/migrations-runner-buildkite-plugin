@@ -9,3 +9,5 @@ configuration:
       type: string
     script:
       type: string
+    timeout:
+      type: integer
