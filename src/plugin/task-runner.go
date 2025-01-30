@@ -27,6 +27,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	if err != nil {
 		return fmt.Errorf("plugin configuration error: %w", err)
 	}
+	buildKiteAgent := buildkite.Agent{}
 
 	buildkite.Log("Executing task-runner plugin\n")
 
@@ -59,6 +60,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	})
 	result, err := awsinternal.WaitForCompletion(ctx, waiterClient, taskArn, config.TimeOut)
 	if err != nil {
+		_ = buildKiteAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully within timeout %v", result.Failures[0]), "error", "ecs-task-runner")
 		return fmt.Errorf("failed to wait for task completion: %w\nFailure information: %v", err, result.Failures[0])
 	}
 	// In a successful scenario for task completion, we would have a `tasks` slice with a single element
