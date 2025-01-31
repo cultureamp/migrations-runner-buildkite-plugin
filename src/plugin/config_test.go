@@ -86,14 +86,14 @@ func TestFetchConfigFromEnvironment(t *testing.T) {
 
 	require.NoError(t, err, "fetch should not error")
 	assert.Equal(t, "test-parameter", config.ParameterName, "fetched message should match environment")
-	assert.Equal(t, "hello-world", config.Script, "fetched message should match environment")
-	assert.Equal(t, 600, config.TimeOut, "fetched message should match environment")
+	assert.Equal(t, "hello-world", config.Script, "fetched script should match environment")
+	assert.Equal(t, 600, config.TimeOut, "fetched timeout should match environment")
 
 	// test default value
 	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIME_OUT")
 	err = fetcher.Fetch(&config)
 	require.NoError(t, err, "fetch should not error")
-	assert.Equal(t, 2700, config.TimeOut, "fetched message should match environment")
+	assert.Equal(t, 2700, config.TimeOut, "fetched timeout should match environment")
 }
 
 func unsetEnv(t *testing.T, key string) {
