@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -23,6 +24,7 @@ type ConfigFetcher interface {
 
 func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) error {
 	var config Config
+	timeoutError := errors.New("exceeded max wait time for TasksStopped waiter")
 	err := fetcher.Fetch(&config)
 	if err != nil {
 		return fmt.Errorf("plugin configuration error: %w", err)
@@ -60,9 +62,29 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	})
 	result, err := awsinternal.WaitForCompletion(ctx, waiterClient, taskArn, config.TimeOut)
 	if err != nil {
-		_ = buildKiteAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully within timeout %v", result.Failures[0]), "error", "ecs-task-runner")
-		return fmt.Errorf("failed to wait for task completion: %w\nFailure information: %v", err, result.Failures[0])
+		if errors.Is(err, timeoutError) {
+			err := buildKiteAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully within timeout (%d seconds)", config.TimeOut), "error", "ecs-task-runner")
+			if err != nil {
+				return fmt.Errorf("failed to annotate buildkite with task timeout failure: %w", err)
+			}
+		}
+		bkerr := buildKiteAgent.Annotate(ctx, fmt.Sprintf("failed to wait for task completion: %v\n", err), "error", "ecs-task-runner")
+		if bkerr != nil {
+			return fmt.Errorf("failed to annotate buildkite with task wait failure: %w, annotation error: %w", err, bkerr)
+		}
+	} else if len(result.Failures) > 0 {
+		// There is still a scenario where the task could return failures but this isn't handled by the waiter
+		// This is due to the waiter only returning errors in scenarios where there are issues querying the task
+		// or scheduling the task. For a list of the Failures that can be returned in this case, see:
+		// https://docs.aws.amazon.com/AmazonECS/latest/developerguide/api_failures_messages.html
+		// specifically, under the `DescribeTasks` API.
+		err := buildKiteAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully: %v", result.Failures[0]), "error", "ecs-task-runner")
+		if err != nil {
+			return fmt.Errorf("failed to annotate buildkite with task failure: %w", err)
+		}
+		return fmt.Errorf("task did not complete successfully: %v", result.Failures[0])
 	}
+
 	// In a successful scenario for task completion, we would have a `tasks` slice with a single element
 	task := result.Tasks[0]
 	taskLogDetails, err := awsinternal.FindLogStreamFromTask(ctx, ecsClient, task)
