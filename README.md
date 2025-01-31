@@ -8,14 +8,23 @@ Add the following lines to your `pipeline.yml`:
 steps:
   - plugins:
       - cultureamp/ecs-task-runner#v0.0.0:
-          message: "This is the message that will be annotated!"
+          parameter-name: "test-parameter"
+          script: "/bin/migrate"
+          timeout: 900
 ```
 
 ## Configuration
 
-### `message` (Required, string)
+### `parameter-name` (Required, string)
+The name or ARN of the parameter in Parameter Store that contains the task definition.
 
-The message to annotate onto the build.
+### `script` (Required, string)
+The name of the script to run in the task. 
+
+### `timeout` (Optional, integer)
+The timeout in seconds that the plugin will wait for the task to complete. If the task does not complete within this time, the plugin will fail. The task execution will continue to run in the background.
+
+Default: 2700
 
 ## Usage
 This plugin is based on an existing pattern in `murmur` where database migrations are run as a task on ECS. To provide additional context for how this plugin is expected to be used, this is the expected pattern:
