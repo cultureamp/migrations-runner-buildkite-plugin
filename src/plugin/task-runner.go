@@ -3,6 +3,7 @@ package plugin
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
@@ -42,9 +43,12 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 		return fmt.Errorf("failed to retrieve configuration: %w", err)
 	}
 
-	// append Script to configuration.Command. The Script value specifies what script needs to be
-	// executed by the task.
-	configuration.Command = append(configuration.Command, config.Script)
+	// The `Command` configuration is optional. If it's not provided, we don't want to update the configuration struct
+	// This check is here because otherwise it inserts a command with the value of an empty string and causes a panic
+	// TODO: Can we decompose this?
+	if config.Command != "" {
+		configuration.Command = strings.Split(config.Command, " ")
+	}
 
 	ecsClient := ecs.NewFromConfig(cfg)
 	taskArn, err := awsinternal.SubmitTask(ctx, ecsClient, configuration)
