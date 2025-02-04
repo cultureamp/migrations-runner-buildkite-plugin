@@ -15,7 +15,7 @@ type ssmAPI interface {
 // ECS Task Configuration
 type TaskRunnerConfiguration struct {
 	Cluster           string   `json:"cluster"`
-	Command           []string `json:"command" required:"false"`
+	Command           []string `json:"command"           required:"false"`
 	SecurityGroupIds  []string `json:"securityGroupIds"`
 	SubnetIds         []string `json:"subnetIds"`
 	TaskDefinitionArn string   `json:"taskDefinitionArn"`

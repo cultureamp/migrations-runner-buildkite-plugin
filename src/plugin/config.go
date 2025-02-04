@@ -5,7 +5,7 @@ import (
 )
 
 type Config struct {
-	ParameterName string `required:"true" split_words:"true"`
+	ParameterName string `required:"true"  split_words:"true"`
 	Command       string `required:"false" split_words:"true"`
 }
 
