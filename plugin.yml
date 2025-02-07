@@ -7,7 +7,11 @@ configuration:
   properties:
     parameter-name:
       type: string
-    script:
+    command:
       type: string
     timeout:
       type: integer
+  additionalProperties: false
+  anyOf:
+    - required:
+        - parameter-name

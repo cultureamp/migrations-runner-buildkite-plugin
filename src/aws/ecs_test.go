@@ -105,6 +105,72 @@ func TestSubmitTask(t *testing.T) {
 	}
 }
 
+func TestContainerOverrideForConfig(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    *TaskRunnerConfiguration
+		expected []types.ContainerOverride
+	}{
+		{
+			name: "when given config with multiple command entries, it should return a ContainerOverride with both Name and Commands",
+			input: &TaskRunnerConfiguration{
+				Cluster:           "test-cluster",
+				Command:           []string{"echo", "hello"},
+				SecurityGroupIds:  []string{"sg-123456"},
+				SubnetIds:         []string{"subnet-123456"},
+				TaskDefinitionArn: "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-1",
+			},
+			expected: []types.ContainerOverride{
+				{
+					Name:    aws.String("migrations-runner"),
+					Command: []string{"echo", "hello"},
+				},
+			},
+		},
+		{
+			name: "when given config with a single command entry, it should return a ContainerOverride with the Name and Command",
+			input: &TaskRunnerConfiguration{
+				Cluster:           "test-cluster",
+				Command:           []string{"bin/ci_run_super_important_migrations"},
+				SecurityGroupIds:  []string{"sg-123456"},
+				SubnetIds:         []string{"subnet-123456"},
+				TaskDefinitionArn: "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-1",
+			},
+			expected: []types.ContainerOverride{
+				{
+					Name:    aws.String("migrations-runner"),
+					Command: []string{"bin/ci_run_super_important_migrations"},
+				},
+			},
+		},
+		{
+			name: "when given config without a command, it should return a ContainerOverride with just the Name",
+			input: &TaskRunnerConfiguration{
+				Cluster:           "test-cluster",
+				Command:           []string{},
+				SecurityGroupIds:  []string{"sg-123456"},
+				SubnetIds:         []string{"subnet-123456"},
+				TaskDefinitionArn: "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-1",
+			},
+			expected: []types.ContainerOverride{
+				{
+					Name: aws.String("migrations-runner"),
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := ContainerOverrideForConfig(tc.input)
+
+			t.Logf("result: %v", result)
+			t.Logf("expected: %v", tc.expected)
+			assert.Equal(t, tc.expected, result)
+		})
+	}
+}
+
 func TestClusterFromTaskArn(t *testing.T) {
 	tests := []struct {
 		name     string

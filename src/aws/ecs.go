@@ -24,16 +24,13 @@ type EcsWaiterAPI interface {
 }
 
 func SubmitTask(ctx context.Context, ecsAPI EcsClientAPI, input *TaskRunnerConfiguration) (string, error) {
+	var containerOverrides = ContainerOverrideForConfig(input)
+
 	response, err := ecsAPI.RunTask(ctx, &ecs.RunTaskInput{
 		Cluster:    &input.Cluster,
 		LaunchType: "FARGATE",
 		Overrides: &types.TaskOverride{
-			ContainerOverrides: []types.ContainerOverride{
-				{
-					Name:    aws.String("migrations-runner"),
-					Command: input.Command,
-				},
-			},
+			ContainerOverrides: containerOverrides,
 		},
 		TaskDefinition: &input.TaskDefinitionArn,
 		NetworkConfiguration: &types.NetworkConfiguration{
@@ -76,6 +73,23 @@ func WaitForCompletion(ctx context.Context, waiter EcsWaiterAPI, taskArn string,
 
 	// In a successful scenario, we should have a `tasks` slice with a single element
 	return result, nil
+}
+
+func ContainerOverrideForConfig(input *TaskRunnerConfiguration) []types.ContainerOverride {
+	if len(input.Command) == 0 {
+		return []types.ContainerOverride{
+			{
+				Name: aws.String("migrations-runner"),
+			},
+		}
+	}
+
+	return []types.ContainerOverride{
+		{
+			Name:    aws.String("migrations-runner"),
+			Command: input.Command,
+		},
+	}
 }
 
 func ClusterFromTaskArn(arn string) string {
