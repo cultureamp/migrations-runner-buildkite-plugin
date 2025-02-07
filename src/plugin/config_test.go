@@ -24,7 +24,7 @@ func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 			name: "all required parameters are unset",
 			disabledEnvVars: []string{
 				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME",
-        "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND",
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND",
 				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIMEOUT",
 			},
 			enabledEnvVars: map[string]string{},
