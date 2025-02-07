@@ -19,8 +19,8 @@ func (m mockGetParameter) GetParameter(ctx context.Context, params *ssm.GetParam
 
 func TestRetrieveConfiguration(t *testing.T) {
 	// JSON strings that would be returned from the SSM parameter store
-	testTaskConfig1 := `{"cluster": "test-cluster","command": ["echo", "hello"],"subnetIds": ["subnet-123456"],"securityGroupIds": ["sg-123456"],"taskDefinitionArn": "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-1"}`
-	testTaskConfig2 := `{"cluster": "test-cluster","command": ["echo", "byebye"],"subnetIds": ["subnet-654321"],"securityGroupIds": ["sg-654321"],"taskDefinitionArn": "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-2"}`
+	testTaskConfig1 := `{"cluster": "test-cluster","subnetIds": ["subnet-123456"],"securityGroupIds": ["sg-123456"],"taskDefinitionArn": "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-1"}`
+	testTaskConfig2 := `{"cluster": "test-cluster","subnetIds": ["subnet-654321"],"securityGroupIds": ["sg-654321"],"taskDefinitionArn": "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-2"}`
 
 	mockedClient1 := mockGetParameter(func(ctx context.Context, params *ssm.GetParameterInput, optFns ...func(*ssm.Options)) (*ssm.GetParameterOutput, error) {
 		return &ssm.GetParameterOutput{
@@ -50,7 +50,6 @@ func TestRetrieveConfiguration(t *testing.T) {
 			client: mockedClient1,
 			expected: &TaskRunnerConfiguration{
 				Cluster:           "test-cluster",
-				Command:           []string{"echo", "hello"},
 				SecurityGroupIds:  []string{"sg-123456"},
 				SubnetIds:         []string{"subnet-123456"},
 				TaskDefinitionArn: "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-1",
@@ -62,7 +61,6 @@ func TestRetrieveConfiguration(t *testing.T) {
 			client: mockedClient2,
 			expected: &TaskRunnerConfiguration{
 				Cluster:           "test-cluster",
-				Command:           []string{"echo", "byebye"},
 				SecurityGroupIds:  []string{"sg-654321"},
 				SubnetIds:         []string{"subnet-654321"},
 				TaskDefinitionArn: "arn:aws:ecs:us-west-2:123456789012:task-definition/test-task-2",

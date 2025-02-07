@@ -7,5 +7,9 @@ configuration:
   properties:
     parameter-name:
       type: string
-    script:
+    command:
       type: string
+  additionalProperties: false
+  anyOf:
+    - required:
+        - parameter-name
