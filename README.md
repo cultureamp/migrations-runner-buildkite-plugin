@@ -8,7 +8,8 @@ Add the following lines to your `pipeline.yml`:
 steps:
   - plugins:
       - cultureamp/ecs-task-runner#v0.0.0:
-          message: "This is the message that will be annotated!"
+          parameter-name: "/my-cool-service/farm-name"
+          command: "./run-my-fully-siq-migrations"
 ```
 
 ## Configuration
