@@ -9,7 +9,7 @@ steps:
   - plugins:
       - cultureamp/ecs-task-runner#v0.0.0:
           parameter-name: "test-parameter"
-          script: "/bin/migrate"
+          command: "/bin/migrate"
           timeout: 900
 ```
 
@@ -18,8 +18,8 @@ steps:
 ### `parameter-name` (Required, string)
 The name or ARN of the parameter in Parameter Store that contains the task definition.
 
-### `script` (Required, string)
-The name of the script to run in the task. 
+### `command` (Required, string)
+The name of the command to run in the task. 
 
 ### `timeout` (Optional, integer)
 The timeout in seconds that the plugin will wait for the task to complete. If the task does not complete within this time, the plugin will fail. The task execution will continue to run in the background.
@@ -43,7 +43,7 @@ This plugin comes with some assumed infrastructure that needs to be deployed bef
 - An IAM role for the BK agent to start the task
 - A Parameter Store parameter extending the task definition by providing entrypoint overrides and networking configuration
 - A log group for the task
-- A security group for your service (this can be the [base-infrastructure-for-services](https://github.com/cultureamp/base-infrastructure-for-services) source security group
+- A security group for your service (this can be the [base-infrastructure-for-services](https://github.com/cultureamp/base-infrastructure-for-services) source security group)
 
 This can be visualised below:
 ![The overall flow of this plugin and AWS resources](docs/images/diagram.svg)
