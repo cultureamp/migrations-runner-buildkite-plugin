@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
 	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/buildkite"
 	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/plugin"
 )
@@ -13,7 +14,7 @@ func main() {
 	fetcher := plugin.EnvironmentConfigFetcher{}
 	taskRunnerPlugin := plugin.TaskRunnerPlugin{}
 
-	err := taskRunnerPlugin.Run(ctx, fetcher)
+	err := taskRunnerPlugin.Run(ctx, fetcher, awsinternal.WaitForCompletion)
 
 	if err != nil {
 		buildkite.LogFailuref("plugin execution failed: %s\n", err.Error())

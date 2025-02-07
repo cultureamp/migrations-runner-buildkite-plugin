@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
@@ -18,13 +19,14 @@ import (
 type TaskRunnerPlugin struct {
 }
 
+type WaitForCompletion func(ctx context.Context, waiter awsinternal.EcsWaiterAPI, taskArn string, timeOut int) (*ecs.DescribeTasksOutput, error)
 type ConfigFetcher interface {
 	Fetch(config *Config) error
 }
 
-func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) error {
+func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, waiter WaitForCompletion) error {
 	var config Config
-	timeoutError := errors.New("exceeded max wait time for TasksStopped waiter")
+
 	err := fetcher.Fetch(&config)
 	if err != nil {
 		return fmt.Errorf("plugin configuration error: %w", err)
@@ -60,29 +62,10 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 		// TODO: This is currently a magic number. If we want this to be configurable, remove the nolint directive and fix it up
 		o.MaxDelay = 10 * time.Second //nolint:mnd
 	})
-	result, err := awsinternal.WaitForCompletion(ctx, waiterClient, taskArn, config.TimeOut)
+	result, err := waiter(ctx, waiterClient, taskArn, config.TimeOut)
+	err = trp.HandleResults(ctx, result, err, buildKiteAgent, config)
 	if err != nil {
-		if errors.Is(err, timeoutError) {
-			err := buildKiteAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully within timeout (%d seconds)", config.TimeOut), "error", "ecs-task-runner")
-			if err != nil {
-				return fmt.Errorf("failed to annotate buildkite with task timeout failure: %w", err)
-			}
-		}
-		bkerr := buildKiteAgent.Annotate(ctx, fmt.Sprintf("failed to wait for task completion: %v\n", err), "error", "ecs-task-runner")
-		if bkerr != nil {
-			return fmt.Errorf("failed to annotate buildkite with task wait failure: %w, annotation error: %w", err, bkerr)
-		}
-	} else if len(result.Failures) > 0 {
-		// There is still a scenario where the task could return failures but this isn't handled by the waiter
-		// This is due to the waiter only returning errors in scenarios where there are issues querying the task
-		// or scheduling the task. For a list of the Failures that can be returned in this case, see:
-		// https://docs.aws.amazon.com/AmazonECS/latest/developerguide/api_failures_messages.html
-		// specifically, under the `DescribeTasks` API.
-		err := buildKiteAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully: %v", result.Failures[0]), "error", "ecs-task-runner")
-		if err != nil {
-			return fmt.Errorf("failed to annotate buildkite with task failure: %w", err)
-		}
-		return fmt.Errorf("task did not complete successfully: %v", result.Failures[0])
+		return fmt.Errorf("failed to handle task results: %w", err)
 	}
 
 	// In a successful scenario for task completion, we would have a `tasks` slice with a single element
@@ -122,5 +105,35 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher) erro
 	}
 
 	buildkite.Log("done. \n")
+	return nil
+}
+
+func (trp TaskRunnerPlugin) HandleResults(ctx context.Context, output *ecs.DescribeTasksOutput, err error, bkAgent buildkite.AgentAPI, config Config) error {
+	if err != nil {
+		// This comparison is hacky, but is the only way that I could get the wrapped errors surfaced
+		// from the AWS library to be properly handled. It would be better if this was done using errors.As
+		if strings.Contains(err.Error(), "exceeded max wait time for TasksStopped waiter") {
+			err := bkAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully within timeout (%d seconds)", config.TimeOut), "error", "ecs-task-runner")
+			if err != nil {
+				return fmt.Errorf("failed to annotate buildkite with task timeout failure: %w", err)
+			}
+			return errors.New("task did not complete within the time limit")
+		}
+		bkerr := bkAgent.Annotate(ctx, fmt.Sprintf("failed to wait for task completion: %v\n", err), "error", "ecs-task-runner")
+		if bkerr != nil {
+			return fmt.Errorf("failed to annotate buildkite with task wait failure: %w, annotation error: %w", err, bkerr)
+		}
+	} else if len(output.Failures) > 0 {
+		// There is still a scenario where the task could return failures but this isn't handled by the waiter
+		// This is due to the waiter only returning errors in scenarios where there are issues querying the task
+		// or scheduling the task. For a list of the Failures that can be returned in this case, see:
+		// https://docs.aws.amazon.com/AmazonECS/latest/developerguide/api_failures_messages.html
+		// specifically, under the `DescribeTasks` API.
+		err := bkAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully: %v", output.Failures[0]), "error", "ecs-task-runner")
+		if err != nil {
+			return fmt.Errorf("failed to annotate buildkite with task failure: %w", err)
+		}
+		return fmt.Errorf("task did not complete successfully: %v", output.Failures[0])
+	}
 	return nil
 }

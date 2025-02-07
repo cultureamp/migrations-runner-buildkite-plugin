@@ -19,7 +19,7 @@ type EcsClientAPI interface {
 	DescribeTaskDefinition(ctx context.Context, params *ecs.DescribeTaskDefinitionInput, optFns ...func(*ecs.Options)) (*ecs.DescribeTaskDefinitionOutput, error)
 }
 
-type ecsWaiterAPI interface {
+type EcsWaiterAPI interface {
 	WaitForOutput(ctx context.Context, params *ecs.DescribeTasksInput, maxWaitDur time.Duration, optFns ...func(*ecs.TasksStoppedWaiterOptions)) (*ecs.DescribeTasksOutput, error)
 }
 
@@ -59,7 +59,7 @@ func SubmitTask(ctx context.Context, ecsAPI EcsClientAPI, input *TaskRunnerConfi
 	return *response.Tasks[0].TaskArn, nil
 }
 
-func WaitForCompletion(ctx context.Context, waiter ecsWaiterAPI, taskArn string, timeOut int) (*ecs.DescribeTasksOutput, error) {
+func WaitForCompletion(ctx context.Context, waiter EcsWaiterAPI, taskArn string, timeOut int) (*ecs.DescribeTasksOutput, error) {
 	cluster := ClusterFromTaskArn(taskArn)
 
 	maxWaitDuration := time.Duration(timeOut) * time.Second

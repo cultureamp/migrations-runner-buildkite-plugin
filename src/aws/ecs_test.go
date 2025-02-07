@@ -322,16 +322,23 @@ func TestFindLogStreamFromTaskNegative(t *testing.T) {
 // to allow thing to finish in the background. The return value is used only for when a task fails, and we push
 // this to a log.
 func TestWaitForCompletion(t *testing.T) {
-	mockedWaiter := mockECSWaiter{
-		mockWaitForOutput: func(context.Context, *ecs.DescribeTasksInput, time.Duration, ...func(*ecs.TasksStoppedWaiterOptions)) (*ecs.DescribeTasksOutput, error) {
-			return &ecs.DescribeTasksOutput{
-				Failures: []types.Failure{
-					{
-						Arn:    aws.String("arn:aws:ecs:us-west-2:123456789012:task/test-cluster/07cc583696bd44e0be450bff7314ddaf"),
-						Detail: aws.String("task stopped"),
-						Reason: aws.String("computer is full of beanz"),
-					},
-				}}, errors.New("task stopped: computer is full of beanz")
+	mockedWaiter := map[string]mockECSWaiter{
+		"beans": {
+			mockWaitForOutput: func(context.Context, *ecs.DescribeTasksInput, time.Duration, ...func(*ecs.TasksStoppedWaiterOptions)) (*ecs.DescribeTasksOutput, error) {
+				return &ecs.DescribeTasksOutput{
+					Failures: []types.Failure{
+						{
+							Arn:    aws.String("arn:aws:ecs:us-west-2:123456789012:task/test-cluster/07cc583696bd44e0be450bff7314ddaf"),
+							Detail: aws.String("task stopped"),
+							Reason: aws.String("computer is full of beanz"),
+						},
+					}}, nil
+			},
+		},
+		"slowpoke": {
+			mockWaitForOutput: func(context.Context, *ecs.DescribeTasksInput, time.Duration, ...func(*ecs.TasksStoppedWaiterOptions)) (*ecs.DescribeTasksOutput, error) {
+				return nil, errors.New("task timed out: computer is full of beanz")
+			},
 		},
 	}
 
@@ -344,13 +351,13 @@ func TestWaitForCompletion(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
-		waiter   ecsWaiterAPI
+		waiter   EcsWaiterAPI
 		expected expectedReturn
 	}{
 		{
 			name:   "given a task ARN, it should return the task details",
 			input:  "arn:aws:ecs:us-west-2:123456789012:task/test-cluster/07cc583696bd44e0be450bff7314ddaf",
-			waiter: mockedWaiter,
+			waiter: mockedWaiter["beans"],
 			expected: expectedReturn{&ecs.DescribeTasksOutput{
 				Failures: []types.Failure{
 					{
@@ -358,21 +365,27 @@ func TestWaitForCompletion(t *testing.T) {
 						Detail: aws.String("task stopped"),
 						Reason: aws.String("computer is full of beanz"),
 					},
-				}}, errors.New("task stopped: computer is full of beanz"),
+				}}, nil,
 			},
+		},
+		{
+			name:     "given a task that times out, it should return an error",
+			input:    "arn:aws:ecs:us-west-2:123456789012:task/test-cluster/07cc583696bd44e0be450bff7314ddaf",
+			waiter:   mockedWaiter["slowpoke"],
+			expected: expectedReturn{nil, errors.New("task timed out: computer is full of beanz")},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			result, err := WaitForCompletion(context.TODO(), tc.waiter, tc.input, 15)
-			t.Logf("result: '%v'", err)
-			t.Logf("expected: detail: %v, reason: %v", *tc.expected.Failures[0].Detail, *tc.expected.Failures[0].Reason)
-
-			// The function is most-useful when the underlying task fails. i.e. no news is good news in a real-world scenario
-			// So, we will test the failure cases
-			require.Error(t, err)
-			assert.Equal(t, tc.expected.Failures[0], result.Failures[0])
+			t.Logf("name: %s result: '%v'", tc.name, err)
+			// Errors are only returned when the waiter times out
+			if err != nil {
+				require.Equal(t, tc.expected.Error(), err.Error())
+			} else {
+				require.Equal(t, tc.expected.Failures, result.Failures)
+			}
 		})
 	}
 }
