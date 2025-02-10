@@ -403,7 +403,7 @@ func TestWaitForCompletion(t *testing.T) {
 		},
 		"slowpoke": {
 			mockWaitForOutput: func(context.Context, *ecs.DescribeTasksInput, time.Duration, ...func(*ecs.TasksStoppedWaiterOptions)) (*ecs.DescribeTasksOutput, error) {
-				return nil, errors.New("task timed out: computer is full of beanz")
+				return nil, errors.New("task timed out: computer still thinking")
 			},
 		},
 	}
@@ -438,7 +438,7 @@ func TestWaitForCompletion(t *testing.T) {
 			name:     "given a task that times out, it should return an error",
 			input:    "arn:aws:ecs:us-west-2:123456789012:task/test-cluster/07cc583696bd44e0be450bff7314ddaf",
 			waiter:   mockedWaiter["slowpoke"],
-			expected: expectedReturn{nil, errors.New("task timed out: computer is full of beanz")},
+			expected: expectedReturn{nil, errors.New("task timed out: computer still thinking")},
 		},
 	}
 
