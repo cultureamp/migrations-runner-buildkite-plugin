@@ -18,8 +18,8 @@ steps:
 ### `parameter-name` (Required, string)
 The name or ARN of the parameter in Parameter Store that contains the task definition.
 
-### `command` (Required, string)
-The name of the command to run in the task. 
+### `command` (Optional, string)
+The name of the command to run in the task. When omitted, the task will run the command specified in the parameter.
 
 ### `timeout` (Optional, integer)
 The timeout in seconds that the plugin will wait for the task to complete. If the task does not complete within this time, the plugin will fail. The task execution will continue to run in the background.

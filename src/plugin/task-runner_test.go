@@ -97,11 +97,6 @@ func TestRunPluginResponse(t *testing.T) {
 		"failed":  "task did not complete successfully",
 		"running": "task did not complete within the time limit",
 	}
-	// expectedError := map[string]error{
-	// 	"success": nil,
-	// 	"failed":  errors.New(expectedString["failed"]),
-	// 	"running": errors.New(expectedString["running"]),
-	// }
 
 	for name, mockResponse := range mockResponses {
 		t.Run(name, func(t *testing.T) {
