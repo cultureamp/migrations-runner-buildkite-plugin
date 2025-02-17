@@ -9,6 +9,8 @@ configuration:
       type: string
     command:
       type: string
+    timeout:
+      type: integer
   additionalProperties: false
   anyOf:
     - required:

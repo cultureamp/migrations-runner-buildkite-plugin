@@ -11,10 +11,14 @@ import (
 	osexec "golang.org/x/sys/execabs"
 )
 
+type AgentAPI interface {
+	Annotate(ctx context.Context, message string, style string, annotationContext string) error
+}
+
 type Agent struct {
 }
 
-func (a *Agent) Annotate(ctx context.Context, message string, style string, annotationContext string) error {
+func (a Agent) Annotate(ctx context.Context, message string, style string, annotationContext string) error {
 	return execCmd(ctx, "buildkite-agent", &message, "annotate", "--style", style, "--context", annotationContext)
 }
 

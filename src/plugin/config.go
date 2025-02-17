@@ -7,6 +7,7 @@ import (
 type Config struct {
 	ParameterName string `required:"true"  split_words:"true"`
 	Command       string `required:"false" split_words:"true"`
+	TimeOut       int    `default:"2700"   split_words:"true"`
 }
 
 type EnvironmentConfigFetcher struct {
