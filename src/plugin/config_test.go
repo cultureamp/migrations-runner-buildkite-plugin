@@ -25,6 +25,7 @@ func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 			disabledEnvVars: []string{
 				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME",
 				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND",
+				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIMEOUT",
 			},
 			enabledEnvVars: map[string]string{},
 			expectedErr:    "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME missing value",
@@ -100,18 +101,27 @@ func TestSucceedOnMissingOptionalEnvironment(t *testing.T) {
 func TestFetchConfigFromEnvironment(t *testing.T) {
 	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME")
 	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND")
+	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIME_OUT")
 
 	var config plugin.Config
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
 	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME", "test-parameter")
 	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND", "hello-world")
+	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIME_OUT", "600")
 
 	err := fetcher.Fetch(&config)
 
 	require.NoError(t, err, "fetch should not error")
 	assert.Equal(t, "test-parameter", config.ParameterName, "fetched message should match environment")
-	assert.Equal(t, "hello-world", config.Command, "fetched message should match environment")
+	assert.Equal(t, "hello-world", config.Command, "fetched script should match environment")
+	assert.Equal(t, 600, config.TimeOut, "fetched timeout should match environment")
+
+	// test default value
+	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIME_OUT")
+	err = fetcher.Fetch(&config)
+	require.NoError(t, err, "fetch should not error")
+	assert.Equal(t, 2700, config.TimeOut, "fetched timeout should match environment")
 }
 
 func unsetEnv(t *testing.T, key string) {
