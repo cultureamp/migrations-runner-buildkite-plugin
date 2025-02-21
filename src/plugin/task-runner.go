@@ -60,6 +60,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 		return fmt.Errorf("failed to submit task: %w", err)
 	}
 
+	// FIXME: Confirm how this AWS Library code returns an error, and how it interacts with our `waiter` interface
 	waiterClient := ecs.NewTasksStoppedWaiter(ecsClient, func(o *ecs.TasksStoppedWaiterOptions) {
 		o.MinDelay = time.Second
 		// TODO: This is currently a magic number. If we want this to be configurable, remove the nolint directive and fix it up
@@ -70,7 +71,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 	buildkite.Logf("Waiting for task to complete: %s\n", taskArn)
 	result, err := waiter(ctx, waiterClient, taskArn, config.TimeOut)
 	//FIXME: sussing out why email-service ain't returning logs
-	buildkite.Logf("result: %+v\n", result)
+	buildkite.Logf("result after waiter: %+v\n", result)
 	err = trp.HandleResults(ctx, result, err, buildKiteAgent, config)
 	if err != nil {
 		return fmt.Errorf("failed to handle task results: %w", err)

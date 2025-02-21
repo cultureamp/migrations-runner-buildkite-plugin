@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/buildkite"
 )
 
 // internal interface for ecs
@@ -65,9 +66,15 @@ func WaitForCompletion(ctx context.Context, waiter EcsWaiterAPI, taskArn string,
 		Tasks:   []string{taskArn},
 	}, maxWaitDuration)
 
+	//FIXME: Could stick in a guard clause here (or where it is being called). if `result` is nil, can we do a manual retrieve of the task results? We can see `email-service` is finishing, it's just not aware of it
+	// This would just sweep the bug away than actually fixing it though.
+
 	// the `DescribeTasksOutput` struct is returned even if there is an error. Counterintuitively, it happens to include failure information
 	// which we may want to surface from the `Failures` struct field
 	if err != nil {
+		//FIXME: sussing out why email-service ain't returning logs
+		buildkite.Logf("error in waiter: %s", err)
+		buildkite.Logf("waiter result thus far: %+v", result)
 		return result, err
 	}
 
