@@ -65,6 +65,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 		o.MinDelay = time.Second
 		// TODO: This is currently a magic number. If we want this to be configurable, remove the nolint directive and fix it up
 		o.MaxDelay = 10 * time.Second //nolint:mnd
+		o.LogWaitAttempts = true
 	})
 
 	//FIXME: sussing out why email-service ain't returning logs
