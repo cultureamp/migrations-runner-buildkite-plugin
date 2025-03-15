@@ -15,8 +15,8 @@ require (
 require (
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.9
-	github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs v1.46.1
-	github.com/aws/aws-sdk-go-v2/service/ecs v1.54.1
+	github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs v1.47.0
+	github.com/aws/aws-sdk-go-v2/service/ecs v1.54.2
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.57.2
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
