@@ -20,7 +20,7 @@ setup() {
 #TODO: Update this to reflect what we need to test in the task runner code
 teardown() {
     unset BUILDKITE_PLUGIN_ECR_TASK_RUNNER_BUILDKITE_PLUGIN_MESSAGE
-    rm ./ecs-task-runner-buildkite-plugin || true
+    rm ./migrations-runner-buildkite-plugin || true
 }
 
 create_script() {
@@ -45,6 +45,6 @@ EOM
   unset downloader
 
   assert_success
-  assert_line --regexp "https://github.com/cultureamp/ecs-task-runner-buildkite-plugin/releases/latest/download/ecs-task-runner-buildkite-plugin_linux_amd64 ecs-task-runner-buildkite-plugin"
-  assert_line --regexp "executing ecs-task-runner-buildkite-plugin"
+  assert_line --regexp "https://github.com/cultureamp/migrations-runner-buildkite-plugin/releases/latest/download/migrations-runner-buildkite-plugin_linux_amd64 migrations-runner-buildkite-plugin"
+  assert_line --regexp "executing migrations-runner-buildkite-plugin"
 }

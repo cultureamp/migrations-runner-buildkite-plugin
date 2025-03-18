@@ -7,7 +7,7 @@ Add the following lines to your `pipeline.yml`:
 ```yml
 steps:
   - plugins:
-      - cultureamp/ecs-task-runner#v0.0.0:
+      - cultureamp/migrations-runner#v0.0.0:
           parameter-name: "test-parameter"
           command: "/bin/migrate"
           timeout: 900

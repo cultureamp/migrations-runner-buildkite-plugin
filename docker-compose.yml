@@ -1,7 +1,7 @@
 services:
   lint:
     image: buildkite/plugin-linter
-    command: ["--id", "cultureamp/ecs-task-runner"]
+    command: ["--id", "cultureamp/migrations-runner"]
     volumes:
       - ".:/plugin:ro"
 
