@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
-	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/buildkite"
+	awsinternal "github.com/cultureamp/migrations-runner-buildkite-plugin/aws"
+	"github.com/cultureamp/migrations-runner-buildkite-plugin/buildkite"
 
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
@@ -116,13 +116,13 @@ func (trp TaskRunnerPlugin) HandleResults(ctx context.Context, output *ecs.Descr
 		// This comparison is hacky, but is the only way that I could get the wrapped errors surfaced
 		// from the AWS library to be properly handled. It would be better if this was done using errors.As
 		if strings.Contains(err.Error(), "exceeded max wait time for TasksStopped waiter") {
-			err := bkAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully within timeout (%d seconds)", config.TimeOut), "error", "ecs-task-runner")
+			err := bkAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully within timeout (%d seconds)", config.TimeOut), "error", "migrations-runner")
 			if err != nil {
 				return fmt.Errorf("failed to annotate buildkite with task timeout failure: %w", err)
 			}
 			return errors.New("task did not complete within the time limit")
 		}
-		bkerr := bkAgent.Annotate(ctx, fmt.Sprintf("failed to wait for task completion: %v\n", err), "error", "ecs-task-runner")
+		bkerr := bkAgent.Annotate(ctx, fmt.Sprintf("failed to wait for task completion: %v\n", err), "error", "migrations-runner")
 		if bkerr != nil {
 			return fmt.Errorf("failed to annotate buildkite with task wait failure: %w, annotation error: %w", err, bkerr)
 		}
@@ -132,7 +132,7 @@ func (trp TaskRunnerPlugin) HandleResults(ctx context.Context, output *ecs.Descr
 		// or scheduling the task. For a list of the Failures that can be returned in this case, see:
 		// https://docs.aws.amazon.com/AmazonECS/latest/developerguide/api_failures_messages.html
 		// specifically, under the `DescribeTasks` API.
-		err := bkAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully: %v", output.Failures[0]), "error", "ecs-task-runner")
+		err := bkAgent.Annotate(ctx, fmt.Sprintf("Task did not complete successfully: %v", output.Failures[0]), "error", "migrations-runner")
 		if err != nil {
 			return fmt.Errorf("failed to annotate buildkite with task failure: %w", err)
 		}

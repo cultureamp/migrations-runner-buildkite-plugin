@@ -1,19 +1,19 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: "ecs-task-runner-buildkite-plugin"
-  description: "A Buildkite plugin that submits tasks for ECS clusters"
+  name: "migrations-runner-buildkite-plugin"
+  description: "A Buildkite plugin that submits tasks to execute database migrations"
   links: # add any links that would be useful here. Dashboards, site urls etc
     - title: Source
-      url: "https://github.com/cultureamp/ecs-task-runner-buildkite-plugin"
+      url: "https://github.com/cultureamp/migrations-runner-buildkite-plugin"
   tags:
     - camp-sre
     - data-classification-none
     - asset-criticality-low
   annotations:
-    github.com/project-slug: ecs-task-runner-buildkite-plugin
+    github.com/project-slug: migrations-runner-buildkite-plugin
     github.com/team-slug: cultureamp/sre-foundations
-    buildkite.com/project-slug: culture-amp/ecs-task-runner-buildkite-plugin
+    buildkite.com/project-slug: culture-amp/migrations-runner-buildkite-plugin
 spec:
   type: service
   lifecycle: experimental

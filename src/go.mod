@@ -1,4 +1,4 @@
-module github.com/cultureamp/ecs-task-runner-buildkite-plugin
+module github.com/cultureamp/migrations-runner-buildkite-plugin
 
 go 1.22.3
 

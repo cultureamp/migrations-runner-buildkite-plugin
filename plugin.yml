@@ -1,6 +1,6 @@
-name: ECS Task Runner
+name: Migrations Runner
 description: >
-  A Golang-based plugin to dispatch ECS tasks.
+  A Golang-based plugin to execute database migration tasks.
 author: https://github.com/cultureamp
 requirements: []
 configuration:

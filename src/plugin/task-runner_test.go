@@ -8,8 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
-	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/plugin"
+	awsinternal "github.com/cultureamp/migrations-runner-buildkite-plugin/aws"
+	"github.com/cultureamp/migrations-runner-buildkite-plugin/plugin"
 	"github.com/stretchr/testify/require"
 )
 
