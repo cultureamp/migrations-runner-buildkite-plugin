@@ -21,9 +21,9 @@ func (m MockBuildKiteAgent) Annotate(ctx context.Context, message string, style 
 
 func TestRunPluginResponse(t *testing.T) {
 	buildKiteAgent := MockBuildKiteAgent{}
-	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME", "test-parameter")
-	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_SCRIPT", "hello-world")
-	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIME_OUT", "15")
+	t.Setenv("BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME", "test-parameter")
+	t.Setenv("BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_SCRIPT", "hello-world")
+	t.Setenv("BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_TIME_OUT", "15")
 	mockFetcher := plugin.EnvironmentConfigFetcher{}
 	var config plugin.Config
 	err := mockFetcher.Fetch(&config)
