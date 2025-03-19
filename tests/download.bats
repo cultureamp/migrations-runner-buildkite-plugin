@@ -14,12 +14,12 @@ load '../lib/download.bash'
 
 #TODO: Update this to reflect what we need to test in the task runner code
 setup() {
-  export BUILDKITE_PLUGIN_ECR_TASK_RUNNER_BUILDKITE_PLUGIN_MESSAGE=true
+  export BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_BUILDKITE_PLUGIN_MESSAGE=true
 }
 
 #TODO: Update this to reflect what we need to test in the task runner code
 teardown() {
-    unset BUILDKITE_PLUGIN_ECR_TASK_RUNNER_BUILDKITE_PLUGIN_MESSAGE
+    unset BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_BUILDKITE_PLUGIN_MESSAGE
     rm ./migrations-runner-buildkite-plugin || true
 }
 
