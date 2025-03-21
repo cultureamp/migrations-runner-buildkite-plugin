@@ -11,7 +11,7 @@ RUN if [ "${NETSKOPE_CERT}z" != "z" ];  then \
       echo "${NETSKOPE_CERT}" >> /usr/local/share/ca-certificates/netskope.crt && \
       apk --no-cache add ca-certificates && \
       update-ca-certificates; \
-    fi
+      fi
 
 # Ensure ca-certficates are up to date
 RUN update-ca-certificates
@@ -28,13 +28,13 @@ COPY . ./
 # build as a static binary without debug symbols
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
       -ldflags='-w -s -extldflags "-static"' -a \
-      -o /dist/ecs-task-runner .
+      -o /dist/migrations-runner .
 
 # runtime image using static distroless base
 # using static nonroot image
 # user:group is nobody:nobody, uid:gid = 65534:65534
 FROM ${DISTROLESS_IMAGE}
 
-COPY --from=builder /dist/ecs-task-runner /ecs-task-runner
+COPY --from=builder /dist/migrations-runner /migrations-runner
 
-ENTRYPOINT ["/ecs-task-runner"]
+ENTRYPOINT ["/migrations-runner"]

@@ -13,7 +13,7 @@ type Config struct {
 type EnvironmentConfigFetcher struct {
 }
 
-const pluginEnvironmentPrefix = "BUILDKITE_PLUGIN_ECS_TASK_RUNNER"
+const pluginEnvironmentPrefix = "BUILDKITE_PLUGIN_MIGRATIONS_RUNNER"
 
 func (f EnvironmentConfigFetcher) Fetch(config *Config) error {
 	return envconfig.Process(pluginEnvironmentPrefix, config)

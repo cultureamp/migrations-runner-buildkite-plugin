@@ -1,6 +1,6 @@
 version: 2
 builds:
-  - binary: ecs-task-runner
+  - binary: migrations-runner
     env:
       - CGO_ENABLED=0
     goos:
