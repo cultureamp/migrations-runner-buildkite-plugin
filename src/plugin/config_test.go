@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/plugin"
+	"github.com/cultureamp/migrations-runner-buildkite-plugin/plugin"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,22 +23,22 @@ func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 		{
 			name: "all required parameters are unset",
 			disabledEnvVars: []string{
-				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME",
-				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND",
-				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIMEOUT",
+				"BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME",
+				"BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_COMMAND",
+				"BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_TIMEOUT",
 			},
 			enabledEnvVars: map[string]string{},
-			expectedErr:    "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME missing value",
+			expectedErr:    "required key BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME missing value",
 		},
 		{
 			name: "variable COMMAND set",
 			disabledEnvVars: []string{
-				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME",
+				"BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME",
 			},
 			enabledEnvVars: map[string]string{
-				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND": "bin/script",
+				"BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_COMMAND": "bin/script",
 			},
-			expectedErr: "required key BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME missing value",
+			expectedErr: "required key BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME missing value",
 		},
 	}
 
@@ -72,10 +72,10 @@ func TestSucceedOnMissingOptionalEnvironment(t *testing.T) {
 		{
 			name: "variable COMMAND unset",
 			disabledEnvVars: []string{
-				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND",
+				"BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_COMMAND",
 			},
 			enabledEnvVars: map[string]string{
-				"BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME": "test-parameter",
+				"BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME": "test-parameter",
 			},
 		},
 	}
@@ -99,16 +99,16 @@ func TestSucceedOnMissingOptionalEnvironment(t *testing.T) {
 }
 
 func TestFetchConfigFromEnvironment(t *testing.T) {
-	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME")
-	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND")
-	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIME_OUT")
+	unsetEnv(t, "BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME")
+	unsetEnv(t, "BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_COMMAND")
+	unsetEnv(t, "BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_TIME_OUT")
 
 	var config plugin.Config
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
-	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_PARAMETER_NAME", "test-parameter")
-	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_COMMAND", "hello-world")
-	t.Setenv("BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIME_OUT", "600")
+	t.Setenv("BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME", "test-parameter")
+	t.Setenv("BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_COMMAND", "hello-world")
+	t.Setenv("BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_TIME_OUT", "600")
 
 	err := fetcher.Fetch(&config)
 
@@ -118,7 +118,7 @@ func TestFetchConfigFromEnvironment(t *testing.T) {
 	assert.Equal(t, 600, config.TimeOut, "fetched timeout should match environment")
 
 	// test default value
-	unsetEnv(t, "BUILDKITE_PLUGIN_ECS_TASK_RUNNER_TIME_OUT")
+	unsetEnv(t, "BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_TIME_OUT")
 	err = fetcher.Fetch(&config)
 	require.NoError(t, err, "fetch should not error")
 	assert.Equal(t, 2700, config.TimeOut, "fetched timeout should match environment")

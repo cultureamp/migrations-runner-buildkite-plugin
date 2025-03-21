@@ -4,9 +4,9 @@ import (
 	"context"
 	"os"
 
-	awsinternal "github.com/cultureamp/ecs-task-runner-buildkite-plugin/aws"
-	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/buildkite"
-	"github.com/cultureamp/ecs-task-runner-buildkite-plugin/plugin"
+	awsinternal "github.com/cultureamp/migrations-runner-buildkite-plugin/aws"
+	"github.com/cultureamp/migrations-runner-buildkite-plugin/buildkite"
+	"github.com/cultureamp/migrations-runner-buildkite-plugin/plugin"
 )
 
 func main() {

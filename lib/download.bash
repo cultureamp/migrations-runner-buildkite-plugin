@@ -65,15 +65,15 @@ downloader() {
 
 get_version() {
   local _plugin=${BUILDKITE_PLUGINS:-""}
-  local _version;_version=$(echo "$_plugin" | sed -e 's/.*ecs-task-runner-buildkite-plugin//' -e 's/\".*//')
+  local _version;_version=$(echo "$_plugin" | sed -e 's/.*migrations-runner-buildkite-plugin//' -e 's/\".*//')
   RETVAL="$_version"
 }
 
 download_binary_and_run() {
   get_architecture || return 1
   local _arch="$RETVAL"
-  local _executable="ecs-task-runner-buildkite-plugin"
-  local _repo="https://github.com/cultureamp/ecs-task-runner-buildkite-plugin"
+  local _executable="migrations-runner-buildkite-plugin"
+  local _repo="https://github.com/cultureamp/migrations-runner-buildkite-plugin"
 
   get_version || return 1
   local _version="$RETVAL"
