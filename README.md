@@ -42,7 +42,7 @@ steps:
 
 ### `parameter-name` (Required, string)
 
-The name of the parameter in Parameter Store that contains the task definition. This will be setup by the `MigrationsRunner` construct, so refer to that to find your specific parameter name.
+The name of the parameter in Parameter Store that contains the task definition. This will be setup by the `MigrationsRunner` construct, so refer to the stack where you use `MigrationsRunner` to find your specific parameter name. The parameter created by the construct will always end in `/migrations-runner-config`.
 
 ### `command` (Optional, string)
 
