@@ -1,6 +1,6 @@
 # Migrations Runner Plugin
 
-This plugin is designed to run database migrations task, without requiring consumers to write and maintain their own scripts with executing and tracking compute services to facilitate migration.
+This plugin is designed to run database migrations tasks, without requiring consumers to write and maintain their own scripts including execution and tracking compute services to facilitate migration.
 
 > [!NOTE]
 > Note that this plugin only executes migration tasks, and assumes that the required infrastructure has been deployed. For specific information on how to configure and deploy the prerequisite infrastructre, please refer to the steps outlined here to setup and configure the `MigrationsRunner` construct in `cdk-constructs`.
