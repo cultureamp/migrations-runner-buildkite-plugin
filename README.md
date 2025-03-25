@@ -46,7 +46,7 @@ The name of the parameter in Parameter Store that contains the task definition. 
 
 ### `command` (Optional, string)
 
-The name of the command or script to run in the task. When omitted, the task will run the command specified in the container's `CMD`.
+The name of the command or script to run in the task. When omitted, the task will run the command specified in the container's `CMD` or `ENTRYPOINT`.
 
 > [!NOTE]
 > Care must be taken, as depending on whether the Dockerfile used to create the referenced image has a `CMD` or `ENTRYPOINT` instruction, the command to execute in the container will either be overridden or appended to, respectively.
