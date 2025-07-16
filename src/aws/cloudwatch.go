@@ -26,6 +26,5 @@ func RetrieveLogs(ctx context.Context, cloudwatchLogsClientAPI cloudwatchLogsCli
 	if err != nil {
 		return []types.OutputLogEvent{}, err
 	}
-
 	return response.Events, nil
 }
