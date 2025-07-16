@@ -15,7 +15,6 @@ func main() {
 	taskRunnerPlugin := plugin.TaskRunnerPlugin{}
 
 	err := taskRunnerPlugin.Run(ctx, fetcher, awsinternal.WaitForCompletion)
-
 	if err != nil {
 		buildkite.LogFailuref("plugin execution failed: %s\n", err.Error())
 		os.Exit(1)

@@ -49,6 +49,7 @@ func SubmitTask(ctx context.Context, ecsAPI EcsClientAPI, input *TaskRunnerConfi
 		if err != nil {
 			return "", fmt.Errorf("error in unmarshalling response for failed RunTask: %w", err)
 		}
+
 		return "", fmt.Errorf("ecs:RunTask response contains no TaskArn: %v", string(responseJSON))
 	}
 

@@ -12,6 +12,7 @@ import (
 
 func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 	var config plugin.Config
+
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
 	tests := []struct {
@@ -62,6 +63,7 @@ func TestFailOnMissingRequiredEnvironment(t *testing.T) {
 
 func TestSucceedOnMissingOptionalEnvironment(t *testing.T) {
 	var config plugin.Config
+
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
 	tests := []struct {
@@ -104,6 +106,7 @@ func TestFetchConfigFromEnvironment(t *testing.T) {
 	unsetEnv(t, "BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_TIME_OUT")
 
 	var config plugin.Config
+
 	fetcher := plugin.EnvironmentConfigFetcher{}
 
 	t.Setenv("BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_PARAMETER_NAME", "test-parameter")
@@ -119,6 +122,7 @@ func TestFetchConfigFromEnvironment(t *testing.T) {
 
 	// test default value
 	unsetEnv(t, "BUILDKITE_PLUGIN_MIGRATIONS_RUNNER_TIME_OUT")
+
 	err = fetcher.Fetch(&config)
 	require.NoError(t, err, "fetch should not error")
 	assert.Equal(t, 2700, config.TimeOut, "fetched timeout should match environment")
@@ -129,9 +133,10 @@ func unsetEnv(t *testing.T, key string) {
 
 	// ensure state is restored correctly
 	currValue, exists := os.LookupEnv(key)
+
 	t.Cleanup(func() {
 		if exists {
-			os.Setenv(key, currValue)
+			os.Setenv(key, currValue) //nolint
 		} else {
 			os.Unsetenv(key)
 		}

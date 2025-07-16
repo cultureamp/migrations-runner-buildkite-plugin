@@ -30,6 +30,7 @@ func execCmd(ctx context.Context, executableName string, stdin *string, args ...
 	if stdin != nil {
 		cmd.Stdin = strings.NewReader(*stdin)
 	}
+
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
@@ -37,7 +38,8 @@ func execCmd(ctx context.Context, executableName string, stdin *string, args ...
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan)
 
-	if err := cmd.Start(); err != nil {
+	err := cmd.Start()
+	if err != nil {
 		return err
 	}
 
@@ -48,12 +50,14 @@ func execCmd(ctx context.Context, executableName string, stdin *string, args ...
 		}
 	}()
 
-	if err := cmd.Wait(); err != nil {
+	err = cmd.Wait()
+	if err != nil {
 		_ = cmd.Process.Signal(os.Kill)
 		return fmt.Errorf("failed to wait for command termination: %w", err)
 	}
 
 	waitStatus := cmd.ProcessState.Sys().(syscall.WaitStatus)
+
 	exitStatus := waitStatus.ExitStatus()
 	if exitStatus != 0 {
 		return fmt.Errorf("command exited with non-zero status: %d", exitStatus)
