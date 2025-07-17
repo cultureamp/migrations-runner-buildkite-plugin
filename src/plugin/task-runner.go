@@ -31,6 +31,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 	if err != nil {
 		return fmt.Errorf("plugin configuration error: %w", err)
 	}
+
 	buildKiteAgent := buildkite.Agent{}
 
 	buildkite.Log("Executing task-runner plugin\n")
@@ -41,7 +42,9 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 	}
 
 	ssmClient := ssm.NewFromConfig(cfg)
+
 	buildkite.Logf("Retrieving task configuration from: %s \n", config.ParameterName)
+
 	configuration, err := awsinternal.RetrieveConfiguration(ctx, ssmClient, config.ParameterName)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve configuration: %w", err)
@@ -55,6 +58,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 	}
 
 	ecsClient := ecs.NewFromConfig(cfg)
+
 	taskArn, err := awsinternal.SubmitTask(ctx, ecsClient, configuration)
 	if err != nil {
 		return fmt.Errorf("failed to submit task: %w", err)
@@ -66,6 +70,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 		o.MaxDelay = 10 * time.Second //nolint:mnd
 	})
 	result, err := waiter(ctx, waiterClient, taskArn, config.TimeOut)
+
 	err = trp.HandleResults(ctx, result, err, buildKiteAgent, config)
 	if err != nil {
 		return fmt.Errorf("failed to handle task results: %w", err)
@@ -73,6 +78,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 
 	// In a successful scenario for task completion, we would have a `tasks` slice with a single element
 	task := result.Tasks[0]
+
 	taskLogDetails, err := awsinternal.FindLogStreamFromTask(ctx, ecsClient, task)
 	if err != nil {
 		return fmt.Errorf("failed to acquire log stream information for task: %w", err)
@@ -89,6 +95,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 
 	if len(logs) > 0 {
 		buildkite.Logf("CloudWatch Logs for job: \n")
+
 		for _, l := range logs {
 			if l.Timestamp != nil {
 				// Applying ISO 8601 format, l.Timestamp is in milliseconds, not very useful in logging
@@ -108,6 +115,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 	}
 
 	buildkite.Log("done. \n")
+
 	return nil
 }
 
@@ -120,8 +128,10 @@ func (trp TaskRunnerPlugin) HandleResults(ctx context.Context, output *ecs.Descr
 			if err != nil {
 				return fmt.Errorf("failed to annotate buildkite with task timeout failure: %w", err)
 			}
+
 			return errors.New("task did not complete within the time limit")
 		}
+
 		bkerr := bkAgent.Annotate(ctx, fmt.Sprintf("failed to wait for task completion: %v\n", err), "error", "migrations-runner")
 		if bkerr != nil {
 			return fmt.Errorf("failed to annotate buildkite with task wait failure: %w, annotation error: %w", err, bkerr)
@@ -136,7 +146,9 @@ func (trp TaskRunnerPlugin) HandleResults(ctx context.Context, output *ecs.Descr
 		if err != nil {
 			return fmt.Errorf("failed to annotate buildkite with task failure: %w", err)
 		}
+
 		return fmt.Errorf("task did not complete successfully: %v", output.Failures[0])
 	}
+
 	return nil
 }

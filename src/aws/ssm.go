@@ -31,6 +31,7 @@ func RetrieveConfiguration(ctx context.Context, ssmAPI ssmAPI, parameterName str
 	}
 
 	value := &TaskRunnerConfiguration{}
+
 	err = json.Unmarshal([]byte(*res.Parameter.Value), value)
 	if err != nil {
 		return nil, err
