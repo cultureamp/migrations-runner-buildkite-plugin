@@ -107,7 +107,7 @@ func (trp TaskRunnerPlugin) Run(ctx context.Context, fetcher ConfigFetcher, wait
 
 	// TODO: Assuming the task only has 1 container. What if there others? Like Datadog sidecar
 	if *task.Containers[0].ExitCode != 0 {
-		buildkite.LogFailuref("Task stopped with a non-zero exit code:: %d\n", *task.Containers[0].ExitCode)
+		return fmt.Errorf("task stopped with a non-zero exit code: %d", *task.Containers[0].ExitCode)
 		// TODO: At about here, a structured return type of "success: true/false" and "error" is returned
 	} else {
 		buildkite.Log("Task completed successfully :) \n")
