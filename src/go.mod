@@ -1,6 +1,6 @@
 module github.com/cultureamp/migrations-runner-buildkite-plugin
 
-go 1.24.4
+go 1.25.5
 
 require (
 	github.com/kelseyhightower/envconfig v1.4.0
