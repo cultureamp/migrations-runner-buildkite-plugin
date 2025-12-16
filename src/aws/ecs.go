@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-// internal interface for ecs
+// EcsClientAPI is an internal interface for ecs
 type EcsClientAPI interface {
 	RunTask(ctx context.Context, params *ecs.RunTaskInput, optFns ...func(*ecs.Options)) (*ecs.RunTaskOutput, error)
 	DescribeTasks(ctx context.Context, params *ecs.DescribeTasksInput, optFns ...func(*ecs.Options)) (*ecs.DescribeTasksOutput, error)
@@ -103,7 +103,7 @@ func TaskIDFromArn(taskArn string) string {
 	return parts[len(parts)-1]
 }
 
-// Acquires LogStream details for given ECS Task
+// FindLogStreamFromTask acquires LogStream details for given ECS Task
 func FindLogStreamFromTask(ctx context.Context, ecsClientAPI EcsClientAPI, task types.Task) (LogDetails, error) {
 	response, err := ecsClientAPI.DescribeTaskDefinition(ctx, &ecs.DescribeTaskDefinitionInput{
 		TaskDefinition: task.TaskDefinitionArn,
