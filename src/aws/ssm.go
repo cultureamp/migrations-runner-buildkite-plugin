@@ -12,7 +12,7 @@ type ssmAPI interface {
 	GetParameter(ctx context.Context, params *ssm.GetParameterInput, optFns ...func(*ssm.Options)) (*ssm.GetParameterOutput, error)
 }
 
-// ECS Task Configuration
+// TaskRunnerConfiguration is ECS Task Configuration
 type TaskRunnerConfiguration struct {
 	Cluster           string   `json:"cluster"`
 	Command           []string `json:"command"           required:"false"`
