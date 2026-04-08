@@ -11,7 +11,7 @@ metadata:
     - data-classification-none
     - asset-criticality-low
   annotations:
-    github.com/project-slug: migrations-runner-buildkite-plugin
+    github.com/project-slug: cultureamp/migrations-runner-buildkite-plugin
     github.com/team-slug: cultureamp/sre-foundations
     buildkite.com/project-slug: culture-amp/migrations-runner-buildkite-plugin
 spec:
