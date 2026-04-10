@@ -5,3 +5,5 @@ src/*.html
 
 # Go Release artifacts
 src/dist
+**/.claude/*.local.json
+**/CLAUDE.local.md
