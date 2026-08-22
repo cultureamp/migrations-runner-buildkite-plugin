@@ -4,12 +4,7 @@ go 1.26.2
 
 require (
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/stretchr/testify v1.11.1
-)
-
-require (
-	github.com/kr/pretty v0.1.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	github.com/stretchr/testify v1.12.1
 )
 
 require (
@@ -18,8 +13,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs v1.68.0
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.76.0
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.68.4
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/sys v0.42.0
 )
 
@@ -37,5 +30,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.10 // indirect
 	github.com/aws/smithy-go v1.24.2 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 )
