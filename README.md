@@ -91,3 +91,15 @@ This plugin is based on an existing pattern in `murmur` where database migration
 - The command of the image can be overridden in the task definition to run the specific migration task
 
 This plugin was developed to remove the requirement for engineers to write their own code to perform database migrations, and to remove any variations between these methods.
+
+## Local Development
+
+Ensure devbox is setup as per [Local Dev Environments (LDEs) - Getting Started](https://cultureamp.atlassian.net/wiki/spaces/DE/pages/3342434338/Devbox+setup).
+
+Run lint and tests for the Go source:
+
+    devbox run check
+
+Run the full validation sweep, including the Buildkite plugin linter and bats tests (requires Docker):
+
+    devbox run verify
