@@ -1,5 +1,3 @@
-.devbox/
-
 # VIM swap files
 *.swp
 src/*.html

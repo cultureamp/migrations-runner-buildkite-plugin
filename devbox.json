@@ -4,17 +4,13 @@
     "go@1.26.2",
     "golangci-lint@2.11.4"
   ],
+  "env": {
+    "CGO_ENABLED": "0"
+  },
   "shell": {
     "scripts": {
-      "check": [
-        "(cd src && golangci-lint run)",
-        "(cd src && go test ./...)"
-      ],
-      "verify": [
-        "(cd src && golangci-lint run)",
-        "(cd src && go test -race -cover ./...)",
-        "docker compose run --rm lint",
-        "docker compose run --rm tests"
+      "setup": [
+        "(cd src && go mod download)"
       ]
     }
   }
