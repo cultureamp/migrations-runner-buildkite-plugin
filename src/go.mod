@@ -1,11 +1,6 @@
 module github.com/cultureamp/migrations-runner-buildkite-plugin
 
-go 1.26.2
-
-require (
-	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/stretchr/testify v1.12.1
-)
+go 1.27.0
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.45.1
@@ -13,6 +8,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs v1.84.1
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.92.1
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.75.1
+	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/stretchr/testify v1.12.1
 	golang.org/x/sys v0.47.0
 )
 
